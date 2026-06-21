@@ -26,6 +26,8 @@
 			TC=new TabControl();
 			tabPage1=new TabPage();
 			groupBox3=new GroupBox();
+			CheckDDS=new TextBox();
+			label10=new Label();
 			label2=new Label();
 			CheckRB2=new RadioButton();
 			CheckRB1=new RadioButton();
@@ -37,6 +39,8 @@
 			CheckList=new ListBox();
 			tabPage2=new TabPage();
 			groupBox2=new GroupBox();
+			label9=new Label();
+			CounterDDS=new TextBox();
 			label1=new Label();
 			CounterName=new TextBox();
 			CounterDel=new Button();
@@ -45,6 +49,10 @@
 			CounterList=new ListBox();
 			tabPage3=new TabPage();
 			groupBox1=new GroupBox();
+			label8=new Label();
+			TimerDDS=new TextBox();
+			label7=new Label();
+			TimerName=new TextBox();
 			panel2=new Panel();
 			label6=new Label();
 			TimerRB4=new RadioButton();
@@ -61,14 +69,6 @@
 			TimerList=new ListBox();
 			TaskOk=new Button();
 			TaskCancel=new Button();
-			label7=new Label();
-			TimerName=new TextBox();
-			label8=new Label();
-			TimerDDS=new TextBox();
-			label9=new Label();
-			CounterDDS=new TextBox();
-			CheckDDS=new TextBox();
-			label10=new Label();
 			TC.SuspendLayout();
 			tabPage1.SuspendLayout();
 			groupBox3.SuspendLayout();
@@ -123,6 +123,24 @@
 			groupBox3.TabStop=false;
 			groupBox3.Text="Todo setting";
 			// 
+			// CheckDDS
+			// 
+			CheckDDS.Location=new Point(6, 205);
+			CheckDDS.Multiline=true;
+			CheckDDS.Name="CheckDDS";
+			CheckDDS.ScrollBars=ScrollBars.Vertical;
+			CheckDDS.Size=new Size(363, 116);
+			CheckDDS.TabIndex=23;
+			// 
+			// label10
+			// 
+			label10.AutoSize=true;
+			label10.Location=new Point(6, 187);
+			label10.Name="label10";
+			label10.Size=new Size(100, 15);
+			label10.TabIndex=22;
+			label10.Text="ToDo: Description";
+			// 
 			// label2
 			// 
 			label2.AutoSize=true;
@@ -168,9 +186,9 @@
 			label3.AutoSize=true;
 			label3.Location=new Point(6, 50);
 			label3.Name="label3";
-			label3.Size=new Size(61, 15);
+			label3.Size=new Size(66, 15);
 			label3.TabIndex=17;
-			label3.Text="ToDo: Text";
+			label3.Text="ToDo: Text*";
 			// 
 			// CheckDel
 			// 
@@ -249,14 +267,30 @@
 			groupBox2.TabStop=false;
 			groupBox2.Text="Counter setting";
 			// 
+			// label9
+			// 
+			label9.AutoSize=true;
+			label9.Location=new Point(6, 65);
+			label9.Name="label9";
+			label9.Size=new Size(113, 15);
+			label9.TabIndex=21;
+			label9.Text="Counter Description";
+			// 
+			// CounterDDS
+			// 
+			CounterDDS.Location=new Point(6, 83);
+			CounterDDS.Name="CounterDDS";
+			CounterDDS.Size=new Size(363, 23);
+			CounterDDS.TabIndex=20;
+			// 
 			// label1
 			// 
 			label1.AutoSize=true;
 			label1.Location=new Point(6, 19);
 			label1.Name="label1";
-			label1.Size=new Size(95, 15);
+			label1.Size=new Size(100, 15);
 			label1.TabIndex=19;
-			label1.Text="Counter Caption";
+			label1.Text="Counter Caption*";
 			// 
 			// CounterName
 			// 
@@ -344,6 +378,38 @@
 			groupBox1.TabIndex=16;
 			groupBox1.TabStop=false;
 			groupBox1.Text="Timer Setting";
+			// 
+			// label8
+			// 
+			label8.AutoSize=true;
+			label8.Location=new Point(9, 64);
+			label8.Name="label8";
+			label8.Size=new Size(100, 15);
+			label8.TabIndex=23;
+			label8.Text="Timer Description";
+			// 
+			// TimerDDS
+			// 
+			TimerDDS.Location=new Point(9, 82);
+			TimerDDS.Name="TimerDDS";
+			TimerDDS.Size=new Size(363, 23);
+			TimerDDS.TabIndex=22;
+			// 
+			// label7
+			// 
+			label7.AutoSize=true;
+			label7.Location=new Point(9, 20);
+			label7.Name="label7";
+			label7.Size=new Size(87, 15);
+			label7.TabIndex=21;
+			label7.Text="Timer Caption*";
+			// 
+			// TimerName
+			// 
+			TimerName.Location=new Point(9, 38);
+			TimerName.Name="TimerName";
+			TimerName.Size=new Size(363, 23);
+			TimerName.TabIndex=20;
 			// 
 			// panel2
 			// 
@@ -517,72 +583,6 @@
 			TaskCancel.Text="Cancel";
 			TaskCancel.UseVisualStyleBackColor=false;
 			TaskCancel.Click+=TaskCancel_Click;
-			// 
-			// label7
-			// 
-			label7.AutoSize=true;
-			label7.Location=new Point(9, 20);
-			label7.Name="label7";
-			label7.Size=new Size(82, 15);
-			label7.TabIndex=21;
-			label7.Text="Timer Caption";
-			// 
-			// TimerName
-			// 
-			TimerName.Location=new Point(9, 38);
-			TimerName.Name="TimerName";
-			TimerName.Size=new Size(363, 23);
-			TimerName.TabIndex=20;
-			// 
-			// label8
-			// 
-			label8.AutoSize=true;
-			label8.Location=new Point(9, 64);
-			label8.Name="label8";
-			label8.Size=new Size(100, 15);
-			label8.TabIndex=23;
-			label8.Text="Timer Description";
-			// 
-			// TimerDDS
-			// 
-			TimerDDS.Location=new Point(9, 82);
-			TimerDDS.Name="TimerDDS";
-			TimerDDS.Size=new Size(363, 23);
-			TimerDDS.TabIndex=22;
-			// 
-			// label9
-			// 
-			label9.AutoSize=true;
-			label9.Location=new Point(6, 65);
-			label9.Name="label9";
-			label9.Size=new Size(113, 15);
-			label9.TabIndex=21;
-			label9.Text="Counter Description";
-			// 
-			// CounterDDS
-			// 
-			CounterDDS.Location=new Point(6, 83);
-			CounterDDS.Name="CounterDDS";
-			CounterDDS.Size=new Size(363, 23);
-			CounterDDS.TabIndex=20;
-			// 
-			// CheckDDS
-			// 
-			CheckDDS.Location=new Point(6, 205);
-			CheckDDS.Multiline=true;
-			CheckDDS.Name="CheckDDS";
-			CheckDDS.ScrollBars=ScrollBars.Vertical;
-			CheckDDS.Size=new Size(363, 116);
-			CheckDDS.TabIndex=23;
-			// 
-			// label10
-			// 
-			label10.AutoSize=true;
-			label10.Location=new Point(6, 187);
-			label10.Name="label10";
-			label10.Size=new Size(100, 15);
-			label10.TabIndex=22;
-			label10.Text="ToDo: Description";
 			// 
 			// CreateNewTask
 			// 

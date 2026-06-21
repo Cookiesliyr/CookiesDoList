@@ -68,7 +68,7 @@ namespace Timer2 {
 
 		private void NewTaskButt_Click(object sender, EventArgs e) {
 			if (CurTProgra==null) return;
-			NewTaskMenu.Show();
+			NewTaskMenu.Clear(); NewTaskMenu.Show();
 		}
 
 		// need to add an event for editing Task by using same NewTaskMenu but for editing
