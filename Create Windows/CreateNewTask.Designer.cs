@@ -69,6 +69,8 @@
 			TimerList=new ListBox();
 			TaskOk=new Button();
 			TaskCancel=new Button();
+			TaskName=new TextBox();
+			label11=new Label();
 			TC.SuspendLayout();
 			tabPage1.SuspendLayout();
 			groupBox3.SuspendLayout();
@@ -86,7 +88,7 @@
 			TC.Controls.Add(tabPage1);
 			TC.Controls.Add(tabPage2);
 			TC.Controls.Add(tabPage3);
-			TC.Location=new Point(12, 12);
+			TC.Location=new Point(12, 40);
 			TC.Name="TC";
 			TC.SelectedIndex=0;
 			TC.Size=new Size(571, 372);
@@ -563,7 +565,7 @@
 			TaskOk.BackColor=Color.LimeGreen;
 			TaskOk.FlatStyle=FlatStyle.Flat;
 			TaskOk.Font=new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			TaskOk.Location=new Point(449, 386);
+			TaskOk.Location=new Point(449, 414);
 			TaskOk.Name="TaskOk";
 			TaskOk.Size=new Size(130, 44);
 			TaskOk.TabIndex=12;
@@ -576,7 +578,7 @@
 			TaskCancel.BackColor=Color.LimeGreen;
 			TaskCancel.FlatStyle=FlatStyle.Flat;
 			TaskCancel.Font=new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			TaskCancel.Location=new Point(16, 391);
+			TaskCancel.Location=new Point(16, 419);
 			TaskCancel.Name="TaskCancel";
 			TaskCancel.Size=new Size(130, 44);
 			TaskCancel.TabIndex=11;
@@ -584,11 +586,30 @@
 			TaskCancel.UseVisualStyleBackColor=false;
 			TaskCancel.Click+=TaskCancel_Click;
 			// 
+			// TaskName
+			// 
+			TaskName.Location=new Point(99, 12);
+			TaskName.Name="TaskName";
+			TaskName.Size=new Size(484, 23);
+			TaskName.TabIndex=19;
+			// 
+			// label11
+			// 
+			label11.AutoSize=true;
+			label11.Font=new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			label11.Location=new Point(12, 15);
+			label11.Name="label11";
+			label11.Size=new Size(81, 17);
+			label11.TabIndex=20;
+			label11.Text="Task Name*";
+			// 
 			// CreateNewTask
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
 			AutoScaleMode=AutoScaleMode.Font;
-			ClientSize=new Size(603, 447);
+			ClientSize=new Size(603, 474);
+			Controls.Add(label11);
+			Controls.Add(TaskName);
 			Controls.Add(TaskOk);
 			Controls.Add(TaskCancel);
 			Controls.Add(TC);
@@ -612,6 +633,7 @@
 			panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)TimerValue).EndInit();
 			ResumeLayout(false);
+			PerformLayout();
 		}
 
 		#endregion
@@ -662,5 +684,7 @@
 		private TextBox TimerName;
 		private TextBox CheckDDS;
 		private Label label10;
+		private TextBox TaskName;
+		private Label label11;
 	}
 }

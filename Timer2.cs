@@ -7,9 +7,15 @@ namespace Timer2 {
 		public static CreateNewTask NewTaskMenu = new CreateNewTask();
 
 		public static TProgram CurTProgra;
-
-
 		public static bool EditMode = false;
+
+		// ============= GUI
+		// Todo: figure out a better way to order them ... might need double key?
+		public static Dictionary<int, List<FlowLayoutPanel>>	GBAr = new Dictionary<int, List<FlowLayoutPanel>>();
+		public static Dictionary<int, List<CheckBox>>	ChAr = new Dictionary<int, List<CheckBox>>();
+		public static Dictionary<int, List<Button>>		BuAr = new Dictionary<int, List<Button>>();
+		public static Dictionary<int, List<Label>>		LLAr = new Dictionary<int, List<Label>>();
+		public static Dictionary<int, List<ScrollBar>>	SBAr = new Dictionary<int, List<ScrollBar>>();
 
 		public Timer2() {
 			MainTimer=this;
@@ -68,10 +74,16 @@ namespace Timer2 {
 
 		private void NewTaskButt_Click(object sender, EventArgs e) {
 			if (CurTProgra==null) return;
-			NewTaskMenu.Clear(); NewTaskMenu.Show();
+			CreateNewTask.CurTaskBar=TC.SelectedIndex; NewTaskMenu.Clear(true); NewTaskMenu.Show();
+		
+			
 		}
 
-		// need to add an event for editing Task by using same NewTaskMenu but for editing
+		public void GenerateTaskGUI (int TabN, int TaskN) {
+			if (CurTProgra == null || CurTProgra.TaskTabRAr.Count < TabN || CurTProgra.TaskTabRAr[TabN].TaskAr.Count <TaskN) { System.Diagnostics.Debug.WriteLine("The given TabNumber or TaskNumber doesn't exists!"); return; }
+			TPTask CurTask = CurTProgra.TaskTabRAr [TabN][TaskN];
+
+		}
 		#endregion
 
 

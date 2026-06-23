@@ -42,6 +42,8 @@ namespace Timer2 {
 			return SB.ToString();
 		}
 
+		public virtual TPTask this[int index] { get { return TaskAr[index]; } set { TaskAr[index] = value; } }
+	
 	}
 
 
