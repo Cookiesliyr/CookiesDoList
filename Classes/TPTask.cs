@@ -15,6 +15,21 @@ namespace Timer2 {
 	// }
 
 	public class TaskTabR {
+		
+		public static Action<Control> FrameResize => (GB) => {
+			int k = 0, TabN, TaskN;
+			TK.Token(GB.Name, ref k, '_'); TabN=int.Parse(TK.Token(GB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(GB.Name, ref k, '_'));  
+			Timer2.GBAr[(TabN, TaskN)].Width=Timer2.MainTimer.TC.Width-52;
+			//Timer2.SBAr[(TabN, TaskN)].Location=new Point( Timer2.GBAr[(TabN, TaskN)].Size.Width - 20, 10);
+			//Timer2.SBAr[(TabN, TaskN)].Height = Timer2.GBAr[(TabN, TaskN)].Size.Height-10;
+
+			// Alright, now i need to find the bottom control in the Gr to find is location, so i can decide what's the scrollbar max
+			//int BottomLoc = Math.Max((Timer2.ChAr[(TabN, TaskN)].LastOrDefault()?.Location.Y)??0, Math.Max((Timer2.CBuAr[(TabN, TaskN)].LastOrDefault()?.Location.Y)??0, (Timer2.TLAr[(TabN, TaskN)].LastOrDefault()?.Location.Y)??0));//Timer2.TLAr[(TabN, TaskN)].Last().Location.Y));
+			//Timer2.SBAr[(TabN, TaskN)].Value=0;
+			//Timer2.SBAr[(TabN, TaskN)].Maximum= Math.Max(10, BottomLoc+25 - Timer2.GBAr[(TabN, TaskN)].Height);
+			//System.Diagnostics.Debug.WriteLine(BottomLoc+20);
+		};
+
 		public string ID = "", TabName = "", DDS = "";
 		public List <TPTask> TaskAr = new List<TPTask>();
 
@@ -35,9 +50,9 @@ namespace Timer2 {
 
 		public string Save() { 
 			StringBuilder SB = new StringBuilder();
-			SB.Append(ID+'\u0FF0'+TabName+'\u0FF0'+DDS+'\u0FF0');
-			for (int i = 0; i<TaskAr.Count; i++) SB.Append(TaskAr[i].Save() +'\u0EF0');		
-			SB.Append('\u0EF1');
+			SB.Append(ID+"\u0FF0"+TabName+"\u0FF0"+DDS+"\u0FF0");
+			for (int i = 0; i<TaskAr.Count; i++) SB.Append(TaskAr[i].Save() +"\u0EF0");		
+			SB.Append("\u0EF1");
 
 			return SB.ToString();
 		}
@@ -59,9 +74,10 @@ namespace Timer2 {
 		public List <int> CountersValue = new List <int>();
 		public List <long> TimersValue = new List <long>();
 		public List <long> DefaultTimersValue = new List <long>();
-		public List <int> TimeType = new List <int>(); // Time up\down, Progressbar up\down
-		public List <string> TimersName = new List <string>();
+		//public List <int> TimeType = new List <int>(); // Time up\down, Progressbar up\down
+		public List <string> TimersName = new List <string>(); // i could integrate the type in the name
 		public List <string> TimersDDS = new List <string>();
+		public List <bool> TimersRunning = new List <bool>();
 
 		public TPTask () { }
 
@@ -75,8 +91,8 @@ namespace Timer2 {
 			foreach (int CD in CountersValList) CountersValue.Add(CD);
 			foreach (long CD in TimersList) TimersValue.Add(CD);
 			foreach (long CD in TimersDefaultList) DefaultTimersValue.Add(CD);
-			foreach (int TTD in TimeTypeList) TimeType.Add(TTD);
-			foreach (string CD in TimersNameList) TimersName.Add(CD);
+			//foreach (int TTD in TimeTypeList) TimeType.Add(TTD);
+			foreach (string CD in TimersNameList) { TimersName.Add(CD); TimersRunning.Add(false); }
 			foreach (string CD in TimersDDSList) TimersDDS.Add(CD);
 		}
 
@@ -93,27 +109,28 @@ namespace Timer2 {
 			CountersValue =TK.TokenIntList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			TimersValue =TK.TokenLongList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			DefaultTimersValue =TK.TokenLongList(TaskData, ref k, '\u0FF0', '\u0FF1');
-			TimeType =TK.TokenIntList(TaskData, ref k, '\u0FF0', '\u0FF1');
+			//TimeType =TK.TokenIntList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			TimersName=TK.TokenStringList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			TimersDDS=TK.TokenStringList(TaskData, ref k, '\u0FF0', '\u0FF1');
+			for (int i = 0; i<TimersName.Count; i++) TimersRunning.Add(false);
 		}
 
 		public string Save(string NewID = "") {
 			StringBuilder SB = new StringBuilder();
-			SB.Append( (NewID==""?ID:NewID)+'\u0FF0'+DDS+'\u0FF0'+TaskResetTime+'\u0FF0');
+			SB.Append( (NewID==""?ID:NewID)+"\u0FF0"+DDS+"\u0FF0"+TaskResetTime+"\u0FF0");
 
-			foreach (string CD in CheckData)  SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
-			foreach (string CD in CheckDDS)  SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
-			foreach (string CD in CountersName)  SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
-			foreach (string CD in CountersDDS)  SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
+			foreach (string CD in CheckData)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (string CD in CheckDDS)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (string CD in CountersName)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (string CD in CountersDDS)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 
-			foreach (int CD in CountersValue) SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
-			foreach (long CD in TimersValue)  SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
-			foreach (long CD in DefaultTimersValue) SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
-			foreach (int CD in TimeType)		    SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
-			foreach (string CD in TimersName)  SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
-			foreach (string CD in TimersDDS)  SB.Append(CD+'\u0FF0'); SB.Append('\u0FF1');
-			SB.Append('\u0FF2');
+			foreach (int CD in CountersValue) SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (long CD in TimersValue)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (long CD in DefaultTimersValue) SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			//foreach (int CD in TimeType)	  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (string CD in TimersName) SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (string CD in TimersDDS)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			SB.Append("\u0FF2");
 			return SB.ToString();
 		}
 

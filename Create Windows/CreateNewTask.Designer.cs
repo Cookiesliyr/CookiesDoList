@@ -71,6 +71,9 @@
 			TaskCancel=new Button();
 			TaskName=new TextBox();
 			label11=new Label();
+			CounterToVal=new NumericUpDown();
+			label12=new Label();
+			label13=new Label();
 			TC.SuspendLayout();
 			tabPage1.SuspendLayout();
 			groupBox3.SuspendLayout();
@@ -81,6 +84,7 @@
 			panel2.SuspendLayout();
 			panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)TimerValue).BeginInit();
+			((System.ComponentModel.ISupportInitialize)CounterToVal).BeginInit();
 			SuspendLayout();
 			// 
 			// TC
@@ -258,6 +262,8 @@
 			// 
 			// groupBox2
 			// 
+			groupBox2.Controls.Add(label12);
+			groupBox2.Controls.Add(CounterToVal);
 			groupBox2.Controls.Add(label9);
 			groupBox2.Controls.Add(CounterDDS);
 			groupBox2.Controls.Add(label1);
@@ -366,6 +372,7 @@
 			// 
 			// groupBox1
 			// 
+			groupBox1.Controls.Add(label13);
 			groupBox1.Controls.Add(label8);
 			groupBox1.Controls.Add(TimerDDS);
 			groupBox1.Controls.Add(label7);
@@ -507,6 +514,7 @@
 			// TimerValue
 			// 
 			TimerValue.Location=new Point(9, 212);
+			TimerValue.Maximum=new decimal(new int[] { -1, int.MaxValue, 0, 0 });
 			TimerValue.Name="TimerValue";
 			TimerValue.Size=new Size(181, 23);
 			TimerValue.TabIndex=0;
@@ -603,6 +611,32 @@
 			label11.TabIndex=20;
 			label11.Text="Task Name*";
 			// 
+			// CounterToVal
+			// 
+			CounterToVal.Location=new Point(6, 128);
+			CounterToVal.Maximum=new decimal(new int[] { 3000, 0, 0, 0 });
+			CounterToVal.Name="CounterToVal";
+			CounterToVal.Size=new Size(181, 23);
+			CounterToVal.TabIndex=22;
+			// 
+			// label12
+			// 
+			label12.AutoSize=true;
+			label12.Location=new Point(6, 109);
+			label12.Name="label12";
+			label12.Size=new Size(77, 15);
+			label12.TabIndex=23;
+			label12.Text="Counter Goal";
+			// 
+			// label13
+			// 
+			label13.AutoSize=true;
+			label13.Location=new Point(9, 194);
+			label13.Name="label13";
+			label13.Size=new Size(95, 15);
+			label13.TabIndex=24;
+			label13.Text="Timer Start Value";
+			// 
 			// CreateNewTask
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
@@ -632,6 +666,7 @@
 			panel1.ResumeLayout(false);
 			panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)TimerValue).EndInit();
+			((System.ComponentModel.ISupportInitialize)CounterToVal).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -686,5 +721,8 @@
 		private Label label10;
 		private TextBox TaskName;
 		private Label label11;
+		private Label label12;
+		private NumericUpDown CounterToVal;
+		private Label label13;
 	}
 }

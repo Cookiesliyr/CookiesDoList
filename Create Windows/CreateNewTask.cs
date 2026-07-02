@@ -37,6 +37,9 @@ namespace Timer2 {
 			// This should add or edit the Task in the selected TaskTab
 			if (TaskName.Text == "") { TaskName.BackColor=Color.Red; return; }
 			Timer2.CurTProgra.TaskTabRAr[CurTaskBar].TaskAr.Add(STask.Clone(TaskName.Text));
+			Timer2.MainTimer.GenerateTaskGUI(CurTaskBar, Timer2.CurTProgra.TaskTabRAr[CurTaskBar].TaskAr.Count-1);
+			Timer2.MainTimer.EnterEditMode();
+			Hide();
 		}
 
 		private void TaskCancel_Click(object sender, EventArgs e) {
@@ -84,14 +87,15 @@ namespace Timer2 {
 		#region Counter region
 		private void CounterList_SelectedIndexChanged(object sender, EventArgs e) {
 			if (CounterList.SelectedIndex<0) return;
-			CounterName.Text = STask.CountersName[CounterList.SelectedIndex];
+			int k = 0; CounterToVal.Value=int.Parse(TK.Token(STask.CountersName[CounterList.SelectedIndex], ref k, '_'));
+			CounterName.Text = TK.Token(STask.CountersName[CounterList.SelectedIndex], ref k, '\r');
 			CounterDDS.Text = STask.CountersDDS[CounterList.SelectedIndex];
 		}
 
 		private void CounterAdd_Click(object sender, EventArgs e) {
 			if (CounterName.Text=="") { CounterName.BackColor=Color.Red; return; }
 			STask.CountersValue.Add(0);
-			STask.CountersName.Add(CounterName.Text);
+			STask.CountersName.Add(CounterToVal.Value.ToString() + "_" + CounterName.Text);
 			STask.CountersDDS.Add(CounterDDS.Text);
 			CounterList.Items.Add(CounterName.Text);
 			CounterReinitalize();
@@ -113,46 +117,50 @@ namespace Timer2 {
 		}
 
 		private void CounterReinitalize() {
-			CounterList.SelectedIndex=-1; CounterName.Text=CounterDDS.Text=""; CounterName.BackColor=Color.White;
+			CounterList.SelectedIndex=-1; CounterName.Text=CounterDDS.Text=""; CounterToVal.Value=0; CounterName.BackColor=Color.White;
 		}
 		#endregion
 
 		#region Timer region
 		private void TimerList_SelectedIndexChanged(object sender, EventArgs e) {
 			if (TimerList.SelectedIndex<0) return;
-			TimerValue.Value = STask.TimersValue[TimerList.SelectedIndex];
-			TimerName.Text   = STask.TimersName[TimerList.SelectedIndex];
+			TimerValue.Value = STask.DefaultTimersValue[TimerList.SelectedIndex];
+			TimerName.Text   = STask.TimersName[TimerList.SelectedIndex].Substring(2);
 			TimerDDS.Text    = STask.TimersDDS[TimerList.SelectedIndex];
-			if ((STask.TimeType[TimerList.SelectedIndex]&1)==1) TimerRB2.Checked=true; else TimerRB1.Checked=true;
-			if ((STask.TimeType[TimerList.SelectedIndex]&2)==2) TimerRB4.Checked=true; else TimerRB3.Checked=true;
+			int TimerType = int.Parse(STask.TimersName[TimerList.SelectedIndex][0].ToString());
+			if ((TimerType&1)==1) TimerRB2.Checked=true; else TimerRB1.Checked=true;
+			if ((TimerType&2)==2) TimerRB4.Checked=true; else TimerRB3.Checked=true;
 		}
 
 		private void TimerAdd_Click(object sender, EventArgs e) {
 			if (TimerName.Text=="") { TimerName.BackColor=Color.Red; return; }
-			STask.TimersValue.Add(Convert.ToInt64 (TimerValue.Value)); // find a way to cast it <_<;
-			STask.TimersName.Add(TimerName.Text);
+			System.Diagnostics.Debug.WriteLine("Time Val = "+Convert.ToInt64(TimerValue.Value));
+			STask.TimersValue.Add(0);
+			STask.DefaultTimersValue.Add(Convert.ToInt64 (TimerValue.Value));
+
+			STask.TimersName.Add( ((TimerRB1.Checked ? 0 : 1)+(TimerRB3.Checked ? 0 : 2)) + "_" + TimerName.Text);
 			STask.TimersDDS.Add(TimerDDS.Text);
-			STask.TimeType.Add((TimerRB1.Checked ? 0 : 1)+(TimerRB3.Checked ? 0 : 2)); // hmmm fix it
+			//STask.TimeType.Add((TimerRB1.Checked ? 0 : 1)+(TimerRB3.Checked ? 0 : 2)); // hmmm fix it
 			TimerList.Items.Add(TimerName.Text);
 			TimerReinitalize();
 		}
 
 		private void TimerSave_Click(object sender, EventArgs e) {
 			if (TimerList.SelectedIndex<0) return;
-			STask.TimersValue[TimerList.SelectedIndex]=Convert.ToInt64(TimerValue.Value);
+			STask.DefaultTimersValue[TimerList.SelectedIndex]=Convert.ToInt64(TimerValue.Value);
 			STask.TimersName[TimerList.SelectedIndex]=TimerName.Text;
 			STask.TimersDDS[TimerList.SelectedIndex]=TimerDDS.Text;
-			STask.TimeType[TimerList.SelectedIndex]= (TimerRB1.Checked ? 0 : 1)+(TimerRB3.Checked ? 0 : 2);
+			//STask.TimeType[TimerList.SelectedIndex]= (TimerRB1.Checked ? 0 : 1)+(TimerRB3.Checked ? 0 : 2);
 
 			TimerReinitalize();
 		}
 
 		private void TimerDel_Click(object sender, EventArgs e) {
 			if (TimerList.SelectedIndex<0) return;
-			STask.TimersValue.RemoveAt(TimerList.SelectedIndex);
+			STask.DefaultTimersValue.RemoveAt(TimerList.SelectedIndex);
 			STask.TimersName.RemoveAt(TimerList.SelectedIndex);
 			STask.TimersDDS.RemoveAt(TimerList.SelectedIndex);
-			STask.TimeType.RemoveAt(TimerList.SelectedIndex);
+			//STask.TimeType.RemoveAt(TimerList.SelectedIndex);
 			TimerList.Items.RemoveAt(TimerList.SelectedIndex);
 			TimerReinitalize();
 

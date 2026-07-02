@@ -27,6 +27,7 @@
 		///  the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
+			components=new System.ComponentModel.Container();
 			menuStrip1=new MenuStrip();
 			SMFile=new ToolStripMenuItem();
 			SMCreate=new ToolStripMenuItem();
@@ -41,6 +42,8 @@
 			TCTab3=new TabPage();
 			TCTab4=new TabPage();
 			NewTaskButt=new Button();
+			ToolTip=new ToolTip(components);
+			Timer1=new System.Windows.Forms.Timer(components);
 			menuStrip1.SuspendLayout();
 			TC.SuspendLayout();
 			SuspendLayout();
@@ -160,6 +163,10 @@
 			NewTaskButt.Visible=false;
 			NewTaskButt.Click+=NewTaskButt_Click;
 			// 
+			// Timer1
+			// 
+			Timer1.Tick+=Timer1_Tick;
+			// 
 			// Timer2
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
@@ -197,5 +204,7 @@
 		private TabPage TCTab4;
 		public TabControl TC;
 		private Button NewTaskButt;
+		private ToolTip ToolTip;
+		private System.Windows.Forms.Timer Timer1;
 	}
 }

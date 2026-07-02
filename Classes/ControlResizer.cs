@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Timer2 {
 	public class ControlResizer {
         public static Dictionary<Control, byte> CRAr = new Dictionary<Control, byte>();
-        public static Dictionary<Control, Action> CRActionAr = new Dictionary<Control, Action>();
+        public static Dictionary<Control, Action<Control>> CRActionAr = new Dictionary<Control, Action<Control>>();
         private static Point _cursorStartPoint;
         public static bool _resizing;
         private static Size _currentControlStartSize;
@@ -21,7 +21,7 @@ namespace Timer2 {
 		/// <param name="control">The Control that you want to be resized</param>
 		/// <param name="sides">Which side you want it to be resizable: Top=1 Bottom=2 Left=4 Right=8</param>
 		/// <param name="CRA">What to do based on the resize direction</param>
-        internal static void Init(Control control, byte sides = 15, Action CRA = null) {
+        internal static void Init(Control control, byte sides = 15, Action<Control> CRA = null) {
             if (CRAr.ContainsKey(control)) return;
             if (CRA != null) CRActionAr.Add(control, CRA);
             CRAr.Add(control, sides);
@@ -103,7 +103,7 @@ namespace Timer2 {
         }
 
         private static void StopDragOrResizing(Control control) {
-            if (CRActionAr.ContainsKey(control) && _resizing) CRActionAr[control].Invoke();
+            if (CRActionAr.ContainsKey(control) && _resizing) CRActionAr[control].Invoke(control);
             _resizing = false;
             control.Capture = false;
             UpdateMouseCursor(control);
