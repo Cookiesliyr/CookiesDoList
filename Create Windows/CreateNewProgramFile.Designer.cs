@@ -25,9 +25,9 @@
 		private void InitializeComponent() {
 			groupBox1=new GroupBox();
 			label3=new Label();
-			textBox2=new TextBox();
+			TPDDS=new TextBox();
 			label2=new Label();
-			textBox1=new TextBox();
+			TPName=new TextBox();
 			label1=new Label();
 			PFCreate=new Button();
 			PFCancel=new Button();
@@ -37,9 +37,9 @@
 			// groupBox1
 			// 
 			groupBox1.Controls.Add(label3);
-			groupBox1.Controls.Add(textBox2);
+			groupBox1.Controls.Add(TPDDS);
 			groupBox1.Controls.Add(label2);
-			groupBox1.Controls.Add(textBox1);
+			groupBox1.Controls.Add(TPName);
 			groupBox1.Controls.Add(label1);
 			groupBox1.Controls.Add(PFCreate);
 			groupBox1.Controls.Add(PFCancel);
@@ -59,14 +59,14 @@
 			label3.TabIndex=6;
 			label3.Text="More options later on, but i don't think it is needed";
 			// 
-			// textBox2
+			// TPDDS
 			// 
-			textBox2.Location=new Point(7, 85);
-			textBox2.Multiline=true;
-			textBox2.Name="textBox2";
-			textBox2.ScrollBars=ScrollBars.Vertical;
-			textBox2.Size=new Size(290, 78);
-			textBox2.TabIndex=5;
+			TPDDS.Location=new Point(7, 85);
+			TPDDS.Multiline=true;
+			TPDDS.Name="TPDDS";
+			TPDDS.ScrollBars=ScrollBars.Vertical;
+			TPDDS.Size=new Size(290, 78);
+			TPDDS.TabIndex=5;
 			// 
 			// label2
 			// 
@@ -77,12 +77,12 @@
 			label2.TabIndex=4;
 			label2.Text="Program Description (Optional)";
 			// 
-			// textBox1
+			// TPName
 			// 
-			textBox1.Location=new Point(7, 37);
-			textBox1.Name="textBox1";
-			textBox1.Size=new Size(290, 23);
-			textBox1.TabIndex=3;
+			TPName.Location=new Point(7, 37);
+			TPName.Name="TPName";
+			TPName.Size=new Size(290, 23);
+			TPName.TabIndex=3;
 			// 
 			// label1
 			// 
@@ -127,6 +127,7 @@
 			Controls.Add(groupBox1);
 			Name="CreateNewProgramFile";
 			Text="Create New Program";
+			FormClosing+=CreateNewProgramFile_FormClosing;
 			groupBox1.ResumeLayout(false);
 			groupBox1.PerformLayout();
 			ResumeLayout(false);
@@ -135,12 +136,12 @@
 		#endregion
 
 		private GroupBox groupBox1;
-		private TextBox textBox1;
+		private TextBox TPName;
 		private Label label1;
 		private Button PFCreate;
 		private Button PFCancel;
 		private Label label3;
-		private TextBox textBox2;
+		private TextBox TPDDS;
 		private Label label2;
 	}
 }

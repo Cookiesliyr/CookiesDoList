@@ -12,11 +12,12 @@ namespace Timer2 {
 	public class TProgram {
 		public List<TaskTabR> TaskTabRAr = new List<TaskTabR>();
 		
-		public static string TPName = "", TPDDS ="";
+		public string TPName = "", TPDDS ="";
 
 		public TProgram (string ProgramName, string ProgramDescription = "") { 
 			TPName = ProgramName; TPDDS = ProgramDescription;
 			// Maybe create the default tabs: daily, weekly, etc, ToDo
+			TaskTabRAr.Add(new TaskTabR("ToDo", "ToDo", "default task bar"));
 		}
 
 		public TProgram (string TProgramData) {
@@ -50,10 +51,13 @@ namespace Timer2 {
 			return new TProgram(TPData);
 		}
 
-		public void SaveToFile (string Location = "") {
-			if (!File.Exists(Location)) { System.Diagnostics.Debug.Write("The file location:"+Location+" Doesn't exists"); return; }
+		public void SaveToFile (string FileName, string Location = "") {
+			if (FileName=="") return;
+			if (!Directory.Exists(Location)) {System.Diagnostics.Debug.Write("The file location:"+Location+" Doesn't exists"); return; }
+			
+			//if (!File.Exists(Location)) { System.Diagnostics.Debug.Write("The file location:"+Location+" Doesn't exists"); return; }
 
-			using (StreamWriter SW = new StreamWriter(Location)) { SW.Write(Save()); }
+			using (StreamWriter SW = new StreamWriter(Location + "\\" + FileName)) { SW.Write(Save()); }
 			
 		}
 	}

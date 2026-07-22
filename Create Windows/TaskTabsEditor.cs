@@ -13,13 +13,9 @@ namespace Timer2 {
 	public partial class TaskTabsEditor: Form {
 		TProgram TPR;
 
-		public TaskTabsEditor() {
-			InitializeComponent();
-		}
+		public TaskTabsEditor() { InitializeComponent(); }
 
-		private void TaskTabsEditor_FormClosing(object sender, FormClosingEventArgs e) {
-			if (e.CloseReason==CloseReason.UserClosing) { e.Cancel=true; Hide(); Timer2.MainTimer.Enabled=true; } else base.OnFormClosing(e);
-		}
+		private void TaskTabsEditor_FormClosing(object sender, FormClosingEventArgs e) { if (e.CloseReason==CloseReason.UserClosing) { e.Cancel=true; Hide(); Timer2.MainTimer.Enabled=true; } else base.OnFormClosing(e); }
 
 		public void TabsINI() {
 			TPR=Timer2.CurTProgra;
@@ -30,12 +26,10 @@ namespace Timer2 {
 
 		}
 
-		private void TECancel_Click(object sender, EventArgs e) {
-
-		}
+		private void TECancel_Click(object sender, EventArgs e) { Hide(); }
 
 		private void TEOK_Click(object sender, EventArgs e) {
-
+			Hide();
 		}
 
 		#region Edit Tabs

@@ -41,7 +41,7 @@ namespace Timer2 {
 			TabName=TK.Token(TaskTabRData, ref k, '\u0FF0');
 			DDS=TK.Token(TaskTabRData, ref k, '\u0FF0'); 
 
-			TasksData = TK.Token(TaskTabRData, ref k, '\u0FF1'); z = 0;
+			TasksData = TK.Token(TaskTabRData, ref k, '\u0EF1'); z = 0;
 
             while ((CurTask = TK.Token(TasksData, ref z, '\u0EF0')) != "") 
 				TaskAr.Add(new TPTask(CurTask));
@@ -77,7 +77,11 @@ namespace Timer2 {
 		//public List <int> TimeType = new List <int>(); // Time up\down, Progressbar up\down
 		public List <string> TimersName = new List <string>(); // i could integrate the type in the name
 		public List <string> TimersDDS = new List <string>();
+
 		public List <bool> TimersRunning = new List <bool>();
+		public List <bool> TimersType    = new List <bool>();
+		public List <bool> TimersDone    = new List <bool>();
+
 
 		public TPTask () { }
 
@@ -112,7 +116,12 @@ namespace Timer2 {
 			//TimeType =TK.TokenIntList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			TimersName=TK.TokenStringList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			TimersDDS=TK.TokenStringList(TaskData, ref k, '\u0FF0', '\u0FF1');
-			for (int i = 0; i<TimersName.Count; i++) TimersRunning.Add(false);
+			for (int i = 0; i<TimersName.Count; i++) {
+				TimersRunning.Add(false); TimersDone.Add(false);
+				bool ttb = ((int)(TimersName[i][0])&2)==2;
+				TimersType.Add(ttb);
+			}
+
 		}
 
 		public string Save(string NewID = "") {

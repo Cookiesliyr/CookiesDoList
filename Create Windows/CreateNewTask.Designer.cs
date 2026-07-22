@@ -39,6 +39,8 @@
 			CheckList=new ListBox();
 			tabPage2=new TabPage();
 			groupBox2=new GroupBox();
+			label12=new Label();
+			CounterToVal=new NumericUpDown();
 			label9=new Label();
 			CounterDDS=new TextBox();
 			label1=new Label();
@@ -49,6 +51,7 @@
 			CounterList=new ListBox();
 			tabPage3=new TabPage();
 			groupBox1=new GroupBox();
+			TimerValueLabel=new Label();
 			label8=new Label();
 			TimerDDS=new TextBox();
 			label7=new Label();
@@ -71,20 +74,17 @@
 			TaskCancel=new Button();
 			TaskName=new TextBox();
 			label11=new Label();
-			CounterToVal=new NumericUpDown();
-			label12=new Label();
-			label13=new Label();
 			TC.SuspendLayout();
 			tabPage1.SuspendLayout();
 			groupBox3.SuspendLayout();
 			tabPage2.SuspendLayout();
 			groupBox2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)CounterToVal).BeginInit();
 			tabPage3.SuspendLayout();
 			groupBox1.SuspendLayout();
 			panel2.SuspendLayout();
 			panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)TimerValue).BeginInit();
-			((System.ComponentModel.ISupportInitialize)CounterToVal).BeginInit();
 			SuspendLayout();
 			// 
 			// TC
@@ -275,6 +275,23 @@
 			groupBox2.TabStop=false;
 			groupBox2.Text="Counter setting";
 			// 
+			// label12
+			// 
+			label12.AutoSize=true;
+			label12.Location=new Point(6, 109);
+			label12.Name="label12";
+			label12.Size=new Size(77, 15);
+			label12.TabIndex=23;
+			label12.Text="Counter Goal";
+			// 
+			// CounterToVal
+			// 
+			CounterToVal.Location=new Point(6, 128);
+			CounterToVal.Maximum=new decimal(new int[] { 3000, 0, 0, 0 });
+			CounterToVal.Name="CounterToVal";
+			CounterToVal.Size=new Size(181, 23);
+			CounterToVal.TabIndex=22;
+			// 
 			// label9
 			// 
 			label9.AutoSize=true;
@@ -372,7 +389,7 @@
 			// 
 			// groupBox1
 			// 
-			groupBox1.Controls.Add(label13);
+			groupBox1.Controls.Add(TimerValueLabel);
 			groupBox1.Controls.Add(label8);
 			groupBox1.Controls.Add(TimerDDS);
 			groupBox1.Controls.Add(label7);
@@ -387,6 +404,15 @@
 			groupBox1.TabIndex=16;
 			groupBox1.TabStop=false;
 			groupBox1.Text="Timer Setting";
+			// 
+			// TimerValueLabel
+			// 
+			TimerValueLabel.AutoSize=true;
+			TimerValueLabel.Location=new Point(9, 194);
+			TimerValueLabel.Name="TimerValueLabel";
+			TimerValueLabel.Size=new Size(162, 15);
+			TimerValueLabel.TabIndex=24;
+			TimerValueLabel.Text="Timer Start Value (in seconds)";
 			// 
 			// label8
 			// 
@@ -448,6 +474,7 @@
 			TimerRB4.TabIndex=4;
 			TimerRB4.Text="Up";
 			TimerRB4.UseVisualStyleBackColor=true;
+			TimerRB4.Click+=TimerRB4_Click;
 			// 
 			// TimerRB3
 			// 
@@ -460,6 +487,7 @@
 			TimerRB3.TabStop=true;
 			TimerRB3.Text="Down";
 			TimerRB3.UseVisualStyleBackColor=true;
+			TimerRB3.Click+=TimerRB3_Click;
 			// 
 			// panel1
 			// 
@@ -515,9 +543,11 @@
 			// 
 			TimerValue.Location=new Point(9, 212);
 			TimerValue.Maximum=new decimal(new int[] { -1, int.MaxValue, 0, 0 });
+			TimerValue.Minimum=new decimal(new int[] { 10, 0, 0, 0 });
 			TimerValue.Name="TimerValue";
 			TimerValue.Size=new Size(181, 23);
 			TimerValue.TabIndex=0;
+			TimerValue.Value=new decimal(new int[] { 10, 0, 0, 0 });
 			// 
 			// TimerDel
 			// 
@@ -611,32 +641,6 @@
 			label11.TabIndex=20;
 			label11.Text="Task Name*";
 			// 
-			// CounterToVal
-			// 
-			CounterToVal.Location=new Point(6, 128);
-			CounterToVal.Maximum=new decimal(new int[] { 3000, 0, 0, 0 });
-			CounterToVal.Name="CounterToVal";
-			CounterToVal.Size=new Size(181, 23);
-			CounterToVal.TabIndex=22;
-			// 
-			// label12
-			// 
-			label12.AutoSize=true;
-			label12.Location=new Point(6, 109);
-			label12.Name="label12";
-			label12.Size=new Size(77, 15);
-			label12.TabIndex=23;
-			label12.Text="Counter Goal";
-			// 
-			// label13
-			// 
-			label13.AutoSize=true;
-			label13.Location=new Point(9, 194);
-			label13.Name="label13";
-			label13.Size=new Size(95, 15);
-			label13.TabIndex=24;
-			label13.Text="Timer Start Value";
-			// 
 			// CreateNewTask
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
@@ -658,6 +662,7 @@
 			tabPage2.ResumeLayout(false);
 			groupBox2.ResumeLayout(false);
 			groupBox2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)CounterToVal).EndInit();
 			tabPage3.ResumeLayout(false);
 			groupBox1.ResumeLayout(false);
 			groupBox1.PerformLayout();
@@ -666,7 +671,6 @@
 			panel1.ResumeLayout(false);
 			panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)TimerValue).EndInit();
-			((System.ComponentModel.ISupportInitialize)CounterToVal).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -723,6 +727,6 @@
 		private Label label11;
 		private Label label12;
 		private NumericUpDown CounterToVal;
-		private Label label13;
+		private Label TimerValueLabel;
 	}
 }

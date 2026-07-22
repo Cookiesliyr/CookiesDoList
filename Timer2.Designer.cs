@@ -31,10 +31,10 @@
 			menuStrip1=new MenuStrip();
 			SMFile=new ToolStripMenuItem();
 			SMCreate=new ToolStripMenuItem();
+			SMSave=new ToolStripMenuItem();
 			SMLoad=new ToolStripMenuItem();
 			SMEdit=new ToolStripMenuItem();
 			SMReport=new ToolStripMenuItem();
-			FD=new FolderBrowserDialog();
 			EditMTabs=new Button();
 			TC=new TabControl();
 			TCTab1=new TabPage();
@@ -44,6 +44,9 @@
 			NewTaskButt=new Button();
 			ToolTip=new ToolTip(components);
 			Timer1=new System.Windows.Forms.Timer(components);
+			SFD=new SaveFileDialog();
+			LFD=new OpenFileDialog();
+			SMAuto=new ToolStripMenuItem();
 			menuStrip1.SuspendLayout();
 			TC.SuspendLayout();
 			SuspendLayout();
@@ -59,7 +62,7 @@
 			// 
 			// SMFile
 			// 
-			SMFile.DropDownItems.AddRange(new ToolStripItem[] { SMCreate, SMLoad });
+			SMFile.DropDownItems.AddRange(new ToolStripItem[] { SMCreate, SMSave, SMLoad, SMAuto });
 			SMFile.Name="SMFile";
 			SMFile.Size=new Size(37, 20);
 			SMFile.Text="File";
@@ -67,14 +70,21 @@
 			// SMCreate
 			// 
 			SMCreate.Name="SMCreate";
-			SMCreate.Size=new Size(157, 22);
-			SMCreate.Text="Create Program";
+			SMCreate.Size=new Size(184, 22);
+			SMCreate.Text="Create New Program";
 			SMCreate.Click+=SMCreate_Click;
+			// 
+			// SMSave
+			// 
+			SMSave.Name="SMSave";
+			SMSave.Size=new Size(184, 22);
+			SMSave.Text="Save Program";
+			SMSave.Click+=SMSave_Click;
 			// 
 			// SMLoad
 			// 
 			SMLoad.Name="SMLoad";
-			SMLoad.Size=new Size(157, 22);
+			SMLoad.Size=new Size(184, 22);
 			SMLoad.Text="Load Program";
 			SMLoad.Click+=SMLoad_Click;
 			// 
@@ -167,6 +177,21 @@
 			// 
 			Timer1.Tick+=Timer1_Tick;
 			// 
+			// SFD
+			// 
+			SFD.Filter="Task save file(*.tsk)|*.tsk";
+			// 
+			// LFD
+			// 
+			LFD.Filter="Task save file(*.tsk)|*.tsk";
+			// 
+			// SMAuto
+			// 
+			SMAuto.Name="SMAuto";
+			SMAuto.Size=new Size(184, 22);
+			SMAuto.Text="Set default program";
+			SMAuto.Click+=SMAuto_Click;
+			// 
 			// Timer2
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
@@ -194,7 +219,6 @@
 		private ToolStripMenuItem SMFile;
 		private ToolStripMenuItem SMCreate;
 		private ToolStripMenuItem SMLoad;
-		private FolderBrowserDialog FD;
 		private ToolStripMenuItem SMReport;
 		private ToolStripMenuItem SMEdit;
 		public Button EditMTabs;
@@ -206,5 +230,9 @@
 		private Button NewTaskButt;
 		private ToolTip ToolTip;
 		private System.Windows.Forms.Timer Timer1;
+		private ToolStripMenuItem SMSave;
+		private SaveFileDialog SFD;
+		private OpenFileDialog LFD;
+		private ToolStripMenuItem SMAuto;
 	}
 }
