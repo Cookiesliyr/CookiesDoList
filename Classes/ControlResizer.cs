@@ -34,6 +34,7 @@ namespace Timer2 {
             control.MouseDown += (sender, e) => StartMovingOrResizing(control, e);
             control.MouseUp += (sender, e) => StopDragOrResizing(control);
             control.MouseMove += (sender, e) => MoveControl(container, e);
+			control.MouseLeave+=(sender, e) => { control.Cursor = Cursors.Default; };
         }
 
         private static void UpdateMouseEdgeProperties(Control control, Point mouseLocationInControl) {
@@ -71,6 +72,7 @@ namespace Timer2 {
             if (!_resizing) {
                 UpdateMouseEdgeProperties(control, new Point(e.X, e.Y));
                 UpdateMouseCursor(control);
+				
             }
             else {
                 if (MouseIsInLeftEdge) {

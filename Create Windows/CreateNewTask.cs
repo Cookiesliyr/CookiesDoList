@@ -10,40 +10,62 @@ using System.Windows.Forms;
 
 namespace Timer2 {
 	public partial class CreateNewTask: Form {
-		public static int CurTaskBar = 0;
+		public static int CurTaskBar = 0, CurTaskN =0;
+		
 		TPTask STask;
-
+		
 		public CreateNewTask() { InitializeComponent(); }
 
 		private void CreateNewTask_Load(object sender, EventArgs e) { }
-		private void CreateNewTask_FormClosing(object sender, FormClosingEventArgs e) { if (e.CloseReason==CloseReason.UserClosing) { e.Cancel=true; Hide(); Timer2.MainTimer.Enabled=true; } else base.OnFormClosing(e); }
+		private void CreateNewTask_FormClosing(object sender, FormClosingEventArgs e) { if (e.CloseReason==CloseReason.UserClosing) { e.Cancel=true; Hide(); Timer2.ReturnToTimer(); } else base.OnFormClosing(e); }
 
 		public void Clear(bool newTask = false) {
 			CheckList.Items.Clear(); CounterList.Items.Clear(); TimerList.Items.Clear();
 			TaskName.BackColor=Color.White;
 			CheckRB1.Checked=TimerRB1.Checked=TimerRB3.Checked=true;
-			CheckText.Text=CheckDDS.Text=CounterName.Text=CounterDDS.Text=TimerName.Text=TimerDDS.Text="";
+			TaskName.Text=TaskDDS.Text=CheckText.Text=CheckDDS.Text=CounterName.Text=CounterDDS.Text=TimerName.Text=TimerDDS.Text="";
 			if (newTask) STask=new TPTask();
 		}
 
 		public void EditTask(TPTask TargetTask) {
-			Clear(); STask=TargetTask.Clone();
+			Clear(); STask=TargetTask.Clone(); TaskOk.Text="Edit";
 
-			// Todo: need to make the Ok button do editing instead of adding a new task
-			// might need to add an update function to TPTask instead of replace it with new object
+			TaskName.Text=STask.ID; TaskDDS.Text=STask.DDS; TaskName.BackColor=STask.TaskColor;
+
+			foreach (string C in STask.CheckData)    { CheckList.Items.Add(C.Substring(1)); }
+			foreach (string C in STask.CountersName) { CounterList.Items.Add(C.Substring(C.IndexOf('_')+1)); }
+			foreach (string C in STask.TimersName)   { TimerList.Items.Add(C.Substring(2)); }
+
 		}
 
+		// This should add or edit the Task in the selected TaskTab
 		private void TaskOk_Click(object sender, EventArgs e) {
-			// This should add or edit the Task in the selected TaskTab
 			if (TaskName.Text=="") { TaskName.BackColor=Color.Red; return; }
-			Timer2.CurTProgra.TaskTabRAr[CurTaskBar].TaskAr.Add(STask.Clone(TaskName.Text));
-			Timer2.MainTimer.GenerateTaskGUI(CurTaskBar, Timer2.CurTProgra.TaskTabRAr[CurTaskBar].TaskAr.Count-1);
+			STask.DDS=TaskDDS.Text;
+
+			if (TaskOk.Text == "OK") {
+				Timer2.CurTProgra.TaskTabRAr[CurTaskBar].TaskAr.Add(STask.Clone(TaskName.Text));
+				Timer2.MainTimer.GenerateTaskGUI(CurTaskBar, Timer2.CurTProgra.TaskTabRAr[CurTaskBar].TaskAr.Count-1);
+			} else if (TaskOk.Text == "Edit") {
+				// seems i need to delete the groupbox with all what's in it and create a new one, wonder if i should add it in same order, and how
+				Timer2.CurTProgra.TaskTabRAr[CurTaskBar][CurTaskN] = STask.Clone();
+				Timer2.MainTimer.DeleteTaskGUI(CurTaskBar, CurTaskN);
+				Timer2.MainTimer.GenerateTaskGUI(CurTaskBar, CurTaskN);
+			}
+
 			Timer2.MainTimer.EnterEditMode();
-			Hide();
+			Hide(); Clear(); Timer2.ReturnToTimer();
 		}
 
 		private void TaskCancel_Click(object sender, EventArgs e) {
-			Hide(); Clear();
+			Hide(); Clear(); Timer2.ReturnToTimer();
+		}
+
+		private void TaskColor_Click(object sender, EventArgs e) {
+			if (Timer2.MainTimer.ColorD.ShowDialog()==DialogResult.OK) {
+				TaskName.BackColor=Timer2.MainTimer.ColorD.Color;
+				STask.TaskColor=Timer2.MainTimer.ColorD.Color;
+			}
 		}
 
 		#region Check region
@@ -103,7 +125,7 @@ namespace Timer2 {
 
 		private void CounterSave_Click(object sender, EventArgs e) {
 			if (CounterList.SelectedIndex<0) return;
-			STask.CountersName[CounterList.SelectedIndex]=CounterName.Text;
+			STask.CountersName[CounterList.SelectedIndex]=CounterToVal.Value.ToString()+"_"+CounterName.Text;
 			STask.CountersDDS[CounterList.SelectedIndex]=CounterDDS.Text;
 			CounterReinitalize();
 		}
@@ -127,7 +149,7 @@ namespace Timer2 {
 
 		private void TimerList_SelectedIndexChanged(object sender, EventArgs e) {
 			if (TimerList.SelectedIndex<0) return;
-			TimerValue.Value= (STask.DefaultTimersValue[TimerList.SelectedIndex]/1000);
+			TimerValue.Value=(STask.DefaultTimersValue[TimerList.SelectedIndex]/1000);
 			TimerName.Text=STask.TimersName[TimerList.SelectedIndex].Substring(2);
 			TimerDDS.Text=STask.TimersDDS[TimerList.SelectedIndex];
 			int TimerType = int.Parse(STask.TimersName[TimerList.SelectedIndex][0].ToString());
@@ -180,9 +202,6 @@ namespace Timer2 {
 			TimerValueLabel.Text=(TimerRB3.Checked ? "Timer Start Value (in seconds)" : "Timer Cap Value (in seconds)");
 		}
 		#endregion
-
-
-
 
 	}
 }

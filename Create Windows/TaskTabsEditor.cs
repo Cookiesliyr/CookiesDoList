@@ -15,7 +15,7 @@ namespace Timer2 {
 
 		public TaskTabsEditor() { InitializeComponent(); }
 
-		private void TaskTabsEditor_FormClosing(object sender, FormClosingEventArgs e) { if (e.CloseReason==CloseReason.UserClosing) { e.Cancel=true; Hide(); Timer2.MainTimer.Enabled=true; } else base.OnFormClosing(e); }
+		private void TaskTabsEditor_FormClosing(object sender, FormClosingEventArgs e) { if (e.CloseReason==CloseReason.UserClosing) { e.Cancel=true; Hide(); Timer2.ReturnToTimer(); } else base.OnFormClosing(e); }
 
 		public void TabsINI() {
 			TPR=Timer2.CurTProgra;
@@ -26,10 +26,11 @@ namespace Timer2 {
 
 		}
 
-		private void TECancel_Click(object sender, EventArgs e) { Hide(); }
+		private void TECancel_Click(object sender, EventArgs e) { Hide(); Timer2.ReturnToTimer(); }
 
-		private void TEOK_Click(object sender, EventArgs e) {
-			Hide();
+		private void TEOK_Click(object sender, EventArgs e) { 
+
+			Hide(); Timer2.ReturnToTimer(); 
 		}
 
 		#region Edit Tabs
@@ -74,8 +75,6 @@ namespace Timer2 {
 			TabID.Text = TabName.Text=TabDDS.Text=""; TabList.SelectedIndex=-1; TabID.BackColor = Color.White;
 		}
 		#endregion
-
-
 		
 	}
 }

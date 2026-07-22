@@ -20,6 +20,7 @@ namespace Timer2 {
 			int k = 0, TabN, TaskN;
 			TK.Token(GB.Name, ref k, '_'); TabN=int.Parse(TK.Token(GB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(GB.Name, ref k, '_'));  
 			Timer2.GBAr[(TabN, TaskN)].Width=Timer2.MainTimer.TC.Width-52;
+			Timer2.CurTProgra.TaskTabRAr[TabN].TaskAr[TaskN].GH=Timer2.GBAr[(TabN, TaskN)].Height;
 			//Timer2.SBAr[(TabN, TaskN)].Location=new Point( Timer2.GBAr[(TabN, TaskN)].Size.Width - 20, 10);
 			//Timer2.SBAr[(TabN, TaskN)].Height = Timer2.GBAr[(TabN, TaskN)].Size.Height-10;
 
@@ -28,6 +29,12 @@ namespace Timer2 {
 			//Timer2.SBAr[(TabN, TaskN)].Value=0;
 			//Timer2.SBAr[(TabN, TaskN)].Maximum= Math.Max(10, BottomLoc+25 - Timer2.GBAr[(TabN, TaskN)].Height);
 			//System.Diagnostics.Debug.WriteLine(BottomLoc+20);
+
+			for (int i = 1; i < Timer2.CurTProgra.TaskTabRAr[TabN].TaskAr.Count; i++) 
+				Timer2.GBAr[(TabN, i)].Location = new Point( 6, Timer2.GBAr[(TabN, i-1)].Location.Y+Timer2.GBAr[(TabN, i-1)].Height + 6);
+
+			Timer2.MainTimer.MoveNTB(TabN);
+			
 		};
 
 		public string ID = "", TabName = "", DDS = "";
@@ -63,9 +70,10 @@ namespace Timer2 {
 
 
 	public class TPTask {
-		public string ID { get; set; } public string DDS { get; set; }
+		public string ID { get; set; } public string DDS { get; set; } public int GH { get; set; } = 100;
 		public long TaskResetTime = -1; // in seconds?
-		
+		public Color TaskColor = Color.FromArgb(255, 255, 255);
+
 		// i Could replace the data with classes: Check, Counter and Timer. Structs are immuniable
 		public List <string> CheckData = new List <string>();
 		public List <string> CheckDDS = new List <string>();
@@ -85,8 +93,8 @@ namespace Timer2 {
 
 		public TPTask () { }
 
-		public TPTask(string id, string description, long ResetTime, List<string> CheckList, List<string> CheckDDSList, List<string> CountersNameList, List <string> CountersDDSList, List <int> CountersValList, List <long> TimersList, List <long> TimersDefaultList, List <int> TimeTypeList, List<string> TimersNameList, List<string> TimersDDSList) {
-			ID=id; DDS =description; TaskResetTime=ResetTime;
+		public TPTask(string id, string description, long ResetTime, int GUIHeight, string Taskcolor, List<string> CheckList, List<string> CheckDDSList, List<string> CountersNameList, List <string> CountersDDSList, List <int> CountersValList, List <long> TimersList, List <long> TimersDefaultList, List <int> TimeTypeList, List<string> TimersNameList, List<string> TimersDDSList) {
+			ID=id; DDS =description; TaskResetTime=ResetTime; GH=GUIHeight; TaskColor = Color.FromArgb(int.Parse(Taskcolor));
 			foreach (string CD in CheckList) CheckData.Add(CD);
 			foreach (string CD in CheckDDSList) CheckDDS.Add(CD);
 			foreach (string CD in CountersNameList) CountersName.Add(CD);
@@ -105,6 +113,8 @@ namespace Timer2 {
 			ID  =TK.Token(TaskData, ref k, '\u0FF0'); 
 			DDS =TK.Token(TaskData, ref k, '\u0FF0'); 
 			TaskResetTime = long.Parse( TK.Token(TaskData, ref k, '\u0FF0'));
+			GH = int.Parse( TK.Token(TaskData, ref k, '\u0FF0'));
+			TaskColor = Color.FromArgb(int.Parse(TK.Token(TaskData, ref k, '\u0FF0')));
 
 			CheckData=TK.TokenStringList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			CheckDDS=TK.TokenStringList(TaskData, ref k, '\u0FF0', '\u0FF1');
@@ -126,7 +136,7 @@ namespace Timer2 {
 
 		public string Save(string NewID = "") {
 			StringBuilder SB = new StringBuilder();
-			SB.Append( (NewID==""?ID:NewID)+"\u0FF0"+DDS+"\u0FF0"+TaskResetTime+"\u0FF0");
+			SB.Append((NewID=="" ? ID : NewID)+"\u0FF0"+DDS+"\u0FF0"+TaskResetTime+"\u0FF0"+GH+"\u0FF0"+TaskColor.ToArgb().ToString()+"\u0FF0" );
 
 			foreach (string CD in CheckData)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 			foreach (string CD in CheckDDS)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");

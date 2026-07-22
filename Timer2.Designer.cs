@@ -33,6 +33,7 @@
 			SMCreate=new ToolStripMenuItem();
 			SMSave=new ToolStripMenuItem();
 			SMLoad=new ToolStripMenuItem();
+			SMAuto=new ToolStripMenuItem();
 			SMEdit=new ToolStripMenuItem();
 			SMReport=new ToolStripMenuItem();
 			EditMTabs=new Button();
@@ -46,7 +47,7 @@
 			Timer1=new System.Windows.Forms.Timer(components);
 			SFD=new SaveFileDialog();
 			LFD=new OpenFileDialog();
-			SMAuto=new ToolStripMenuItem();
+			ColorD=new ColorDialog();
 			menuStrip1.SuspendLayout();
 			TC.SuspendLayout();
 			SuspendLayout();
@@ -88,6 +89,13 @@
 			SMLoad.Text="Load Program";
 			SMLoad.Click+=SMLoad_Click;
 			// 
+			// SMAuto
+			// 
+			SMAuto.Name="SMAuto";
+			SMAuto.Size=new Size(184, 22);
+			SMAuto.Text="Set default program";
+			SMAuto.Click+=SMAuto_Click;
+			// 
 			// SMEdit
 			// 
 			SMEdit.Name="SMEdit";
@@ -123,7 +131,7 @@
 			TC.SelectedIndex=0;
 			TC.Size=new Size(595, 275);
 			TC.TabIndex=1;
-			TC.TabIndexChanged+=TC_TabIndexChanged;
+			TC.SelectedIndexChanged+=TC_TabIndexChanged;
 			// 
 			// TCTab1
 			// 
@@ -185,13 +193,6 @@
 			// 
 			LFD.Filter="Task save file(*.tsk)|*.tsk";
 			// 
-			// SMAuto
-			// 
-			SMAuto.Name="SMAuto";
-			SMAuto.Size=new Size(184, 22);
-			SMAuto.Text="Set default program";
-			SMAuto.Click+=SMAuto_Click;
-			// 
 			// Timer2
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
@@ -227,12 +228,13 @@
 		private TabPage TCTab3;
 		private TabPage TCTab4;
 		public TabControl TC;
-		private Button NewTaskButt;
 		private ToolTip ToolTip;
 		private System.Windows.Forms.Timer Timer1;
 		private ToolStripMenuItem SMSave;
 		private SaveFileDialog SFD;
 		private OpenFileDialog LFD;
 		private ToolStripMenuItem SMAuto;
+		public Button NewTaskButt;
+		public ColorDialog ColorD;
 	}
 }

@@ -74,6 +74,9 @@
 			TaskCancel=new Button();
 			TaskName=new TextBox();
 			label11=new Label();
+			TaskColor=new Button();
+			label13=new Label();
+			TaskDDS=new TextBox();
 			TC.SuspendLayout();
 			tabPage1.SuspendLayout();
 			groupBox3.SuspendLayout();
@@ -92,10 +95,10 @@
 			TC.Controls.Add(tabPage1);
 			TC.Controls.Add(tabPage2);
 			TC.Controls.Add(tabPage3);
-			TC.Location=new Point(12, 40);
+			TC.Location=new Point(12, 70);
 			TC.Name="TC";
 			TC.SelectedIndex=0;
-			TC.Size=new Size(571, 372);
+			TC.Size=new Size(571, 371);
 			TC.TabIndex=0;
 			// 
 			// tabPage1
@@ -108,7 +111,7 @@
 			tabPage1.Location=new Point(4, 24);
 			tabPage1.Name="tabPage1";
 			tabPage1.Padding=new Padding(3);
-			tabPage1.Size=new Size(563, 344);
+			tabPage1.Size=new Size(563, 343);
 			tabPage1.TabIndex=0;
 			tabPage1.Text="Todo";
 			tabPage1.UseVisualStyleBackColor=true;
@@ -255,7 +258,7 @@
 			tabPage2.Location=new Point(4, 24);
 			tabPage2.Name="tabPage2";
 			tabPage2.Padding=new Padding(3);
-			tabPage2.Size=new Size(563, 344);
+			tabPage2.Size=new Size(563, 343);
 			tabPage2.TabIndex=1;
 			tabPage2.Text="Counters";
 			tabPage2.UseVisualStyleBackColor=true;
@@ -287,7 +290,7 @@
 			// CounterToVal
 			// 
 			CounterToVal.Location=new Point(6, 128);
-			CounterToVal.Maximum=new decimal(new int[] { 3000, 0, 0, 0 });
+			CounterToVal.Maximum=new decimal(new int[] { 9001, 0, 0, 0 });
 			CounterToVal.Name="CounterToVal";
 			CounterToVal.Size=new Size(181, 23);
 			CounterToVal.TabIndex=22;
@@ -382,7 +385,7 @@
 			tabPage3.Controls.Add(TimerList);
 			tabPage3.Location=new Point(4, 24);
 			tabPage3.Name="tabPage3";
-			tabPage3.Size=new Size(563, 344);
+			tabPage3.Size=new Size(563, 343);
 			tabPage3.TabIndex=2;
 			tabPage3.Text="Timers";
 			tabPage3.UseVisualStyleBackColor=true;
@@ -603,7 +606,7 @@
 			TaskOk.BackColor=Color.LimeGreen;
 			TaskOk.FlatStyle=FlatStyle.Flat;
 			TaskOk.Font=new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			TaskOk.Location=new Point(449, 414);
+			TaskOk.Location=new Point(449, 443);
 			TaskOk.Name="TaskOk";
 			TaskOk.Size=new Size(130, 44);
 			TaskOk.TabIndex=12;
@@ -616,7 +619,7 @@
 			TaskCancel.BackColor=Color.LimeGreen;
 			TaskCancel.FlatStyle=FlatStyle.Flat;
 			TaskCancel.Font=new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			TaskCancel.Location=new Point(16, 419);
+			TaskCancel.Location=new Point(12, 443);
 			TaskCancel.Name="TaskCancel";
 			TaskCancel.Size=new Size(130, 44);
 			TaskCancel.TabIndex=11;
@@ -628,7 +631,7 @@
 			// 
 			TaskName.Location=new Point(99, 12);
 			TaskName.Name="TaskName";
-			TaskName.Size=new Size(484, 23);
+			TaskName.Size=new Size(453, 23);
 			TaskName.TabIndex=19;
 			// 
 			// label11
@@ -641,11 +644,41 @@
 			label11.TabIndex=20;
 			label11.Text="Task Name*";
 			// 
+			// TaskColor
+			// 
+			TaskColor.Location=new Point(558, 11);
+			TaskColor.Name="TaskColor";
+			TaskColor.Size=new Size(39, 23);
+			TaskColor.TabIndex=21;
+			TaskColor.Text="Color";
+			TaskColor.UseVisualStyleBackColor=true;
+			TaskColor.Click+=TaskColor_Click;
+			// 
+			// label13
+			// 
+			label13.AutoSize=true;
+			label13.Font=new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+			label13.Location=new Point(12, 44);
+			label13.Name="label13";
+			label13.Size=new Size(74, 17);
+			label13.TabIndex=23;
+			label13.Text="Description";
+			// 
+			// TaskDDS
+			// 
+			TaskDDS.Location=new Point(99, 41);
+			TaskDDS.Name="TaskDDS";
+			TaskDDS.Size=new Size(453, 23);
+			TaskDDS.TabIndex=22;
+			// 
 			// CreateNewTask
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
 			AutoScaleMode=AutoScaleMode.Font;
-			ClientSize=new Size(603, 474);
+			ClientSize=new Size(603, 508);
+			Controls.Add(label13);
+			Controls.Add(TaskDDS);
+			Controls.Add(TaskColor);
 			Controls.Add(label11);
 			Controls.Add(TaskName);
 			Controls.Add(TaskOk);
@@ -728,5 +761,8 @@
 		private Label label12;
 		private NumericUpDown CounterToVal;
 		private Label TimerValueLabel;
+		private Button TaskColor;
+		private Label label13;
+		private TextBox TaskDDS;
 	}
 }
