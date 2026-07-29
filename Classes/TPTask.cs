@@ -70,8 +70,9 @@ namespace Timer2 {
 
 
 	public class TPTask {
-		public string ID { get; set; } public string DDS { get; set; } public int GH { get; set; } = 100;
-		public long TaskResetTime = -1; // in seconds?
+		public string ID, DDS; public int GH = 100;
+		public byte Days; public (int, int) ResetTime; // HH:MM
+		public DateTime? Expire = null;
 		public Color TaskColor = Color.FromArgb(255, 255, 255);
 
 		// i Could replace the data with classes: Check, Counter and Timer. Structs are immuniable
@@ -85,6 +86,7 @@ namespace Timer2 {
 		//public List <int> TimeType = new List <int>(); // Time up\down, Progressbar up\down
 		public List <string> TimersName = new List <string>(); // i could integrate the type in the name
 		public List <string> TimersDDS = new List <string>();
+		public List <string> TimersWavPath = new List <string>();
 
 		public List <bool> TimersRunning = new List <bool>();
 		public List <bool> TimersType    = new List <bool>();
@@ -93,8 +95,9 @@ namespace Timer2 {
 
 		public TPTask () { }
 
-		public TPTask(string id, string description, long ResetTime, int GUIHeight, string Taskcolor, List<string> CheckList, List<string> CheckDDSList, List<string> CountersNameList, List <string> CountersDDSList, List <int> CountersValList, List <long> TimersList, List <long> TimersDefaultList, List <int> TimeTypeList, List<string> TimersNameList, List<string> TimersDDSList) {
-			ID=id; DDS =description; TaskResetTime=ResetTime; GH=GUIHeight; TaskColor = Color.FromArgb(int.Parse(Taskcolor));
+		public TPTask(string id, string description, byte ResetDays, (int, int) ResetTime, DateTime? TaskExpire, int GUIHeight, string Taskcolor, List<string> CheckList, List<string> CheckDDSList, List<string> CountersNameList, List <string> CountersDDSList, List <int> CountersValList, List <long> TimersList, List <long> TimersDefaultList, List <string> TimersWAVPaths, List <int> TimeTypeList, List<string> TimersNameList, List<string> TimersDDSList) {
+			ID=id; DDS =description; GH=GUIHeight; TaskColor = Color.FromArgb(int.Parse(Taskcolor));
+			Days = ResetDays; this.ResetTime = ResetTime; Expire = TaskExpire;
 			foreach (string CD in CheckList) CheckData.Add(CD);
 			foreach (string CD in CheckDDSList) CheckDDS.Add(CD);
 			foreach (string CD in CountersNameList) CountersName.Add(CD);
@@ -103,6 +106,7 @@ namespace Timer2 {
 			foreach (int CD in CountersValList) CountersValue.Add(CD);
 			foreach (long CD in TimersList) TimersValue.Add(CD);
 			foreach (long CD in TimersDefaultList) DefaultTimersValue.Add(CD);
+			foreach (string CD in TimersWAVPaths) TimersWavPath.Add(CD);
 			//foreach (int TTD in TimeTypeList) TimeType.Add(TTD);
 			foreach (string CD in TimersNameList) { TimersName.Add(CD); TimersRunning.Add(false); }
 			foreach (string CD in TimersDDSList) TimersDDS.Add(CD);
@@ -111,8 +115,11 @@ namespace Timer2 {
 		public TPTask (string TaskData) { 
 			int k = 0, z =0; 
 			ID  =TK.Token(TaskData, ref k, '\u0FF0'); 
-			DDS =TK.Token(TaskData, ref k, '\u0FF0'); 
-			TaskResetTime = long.Parse( TK.Token(TaskData, ref k, '\u0FF0'));
+			DDS =TK.Token(TaskData, ref k, '\u0FF0');
+			Days = byte.Parse( TK.Token(TaskData, ref k, '\u0FF0'));
+			ResetTime = (int.Parse(TK.Token(TaskData, ref k, ',')), int.Parse(TK.Token(TaskData, ref k, '\u0FF0')));
+			string ED = TK.Token(TaskData, ref k, '\u0FF0');
+			Expire = ED =="-1" ? null : DateTime.Parse(ED);
 			GH = int.Parse( TK.Token(TaskData, ref k, '\u0FF0'));
 			TaskColor = Color.FromArgb(int.Parse(TK.Token(TaskData, ref k, '\u0FF0')));
 
@@ -123,6 +130,7 @@ namespace Timer2 {
 			CountersValue =TK.TokenIntList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			TimersValue =TK.TokenLongList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			DefaultTimersValue =TK.TokenLongList(TaskData, ref k, '\u0FF0', '\u0FF1');
+			TimersWavPath=TK.TokenStringList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			//TimeType =TK.TokenIntList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			TimersName=TK.TokenStringList(TaskData, ref k, '\u0FF0', '\u0FF1');
 			TimersDDS=TK.TokenStringList(TaskData, ref k, '\u0FF0', '\u0FF1');
@@ -136,7 +144,7 @@ namespace Timer2 {
 
 		public string Save(string NewID = "") {
 			StringBuilder SB = new StringBuilder();
-			SB.Append((NewID=="" ? ID : NewID)+"\u0FF0"+DDS+"\u0FF0"+TaskResetTime+"\u0FF0"+GH+"\u0FF0"+TaskColor.ToArgb().ToString()+"\u0FF0" );
+			SB.Append((NewID=="" ? ID : NewID)+"\u0FF0"+DDS+"\u0FF0"+Days+"\u0FF0"+ResetTime.Item1+","+ResetTime.Item2+"\u0FF0"+(Expire.HasValue ? Expire.Value.ToString() : "-1")+"\u0FF0"+GH+"\u0FF0"+TaskColor.ToArgb().ToString()+"\u0FF0"  );
 
 			foreach (string CD in CheckData)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 			foreach (string CD in CheckDDS)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
@@ -146,6 +154,7 @@ namespace Timer2 {
 			foreach (int CD in CountersValue) SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 			foreach (long CD in TimersValue)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 			foreach (long CD in DefaultTimersValue) SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (string CD in TimersWavPath)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 			//foreach (int CD in TimeType)	  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 			foreach (string CD in TimersName) SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 			foreach (string CD in TimersDDS)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");

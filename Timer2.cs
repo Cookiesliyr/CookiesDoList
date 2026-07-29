@@ -1,4 +1,6 @@
 ﻿
+using System.IO;
+
 namespace Timer2 {
 	public partial class Timer2: Form {
 		public static Timer2 MainTimer;
@@ -7,7 +9,9 @@ namespace Timer2 {
 		public static CreateNewTask NewTaskMenu = new CreateNewTask();
 
 		public static TProgram CurTProgra;
-		public static bool EditMode = false;
+		static System.Media.SoundPlayer AlarmPlayer = new System.Media.SoundPlayer();
+
+		public static bool EditMode = false, TabClearEdit = false; static int FirePerMin = 0;
 
 		// ============= GUI
 		public static List<Panel> TabGRAr = new List<Panel>();
@@ -32,6 +36,9 @@ namespace Timer2 {
 		public static Dictionary<(int, int), List<Label>> TNAr = new Dictionary<(int, int), List<Label>>();
 		public static Dictionary<(int, int), List<Label>> TLAr = new Dictionary<(int, int), List<Label>>();
 
+		// ===== Track which task can expire or need reset
+		public static Dictionary<(int, int), bool> TaskCheckTimeAr = new Dictionary<(int, int), bool>();
+
 		public Timer2() {
 			MainTimer=this; 
 			InitializeComponent(); NewTaskButt.Width=TC.Width-52;
@@ -41,7 +48,7 @@ namespace Timer2 {
 				using (StreamReader SR = new StreamReader("Autoload.txt")) { TPFN = SR.ReadToEnd(); }
 				if (File.Exists(TPFN)) {
 					CurTProgra=TProgram.LoadFromFile(TPFN);
-					LoadCurProgram(); Timer1.Enabled=true; return;
+					LoadCurProgram(); Timer1.Enabled=true; FirePerMin= 600 - DateTime.Now.Second*10; return;
 				}
 			}
 			
@@ -57,7 +64,6 @@ namespace Timer2 {
 					//TabSBAr.Add(new VScrollBar { });
 					TC.TabPages[i].Controls.Add(TabGRAr[i]); //TC.TabPages[i].Controls.Add(TabSBAr[i]);
 															 //TabSBAr[i].Location=new Point( TC.Width - 30, 5); TabSBAr[i].Height=TC.Height-40; TabSBAr[i].BringToFront();
-
 				}
 			}
 
@@ -79,7 +85,8 @@ namespace Timer2 {
 			};
 			*/
 			
-			Timer1.Enabled=true;
+			Timer1.Enabled=true; 
+			FirePerMin= 600 - DateTime.Now.Second*10;
 		}
 
 		public static void ReturnToTimer () { MainTimer.Enabled=true; Timer2.MainTimer.Enabled=true; MainTimer.TopMost=true; MainTimer.TopMost=false; }
@@ -91,6 +98,7 @@ namespace Timer2 {
 			FPAr[(TabN, TaskN)].Location=new Point(FPAr[(TabN, TaskN)].Location.X, -SB.Value);
 		}*/
 
+		public void CheckChecked (object sender, EventArgs e) { ((CheckBox)sender).BackColor = ((CheckBox)sender).Checked ? Color.Green : Color.LightGray; }
 		public void Counter_MouseDown(object Sender, MouseEventArgs e) {
 			int k = 0, TabN, TaskN, Bi, BVal; Button CB = (Button)Sender;
 			TK.Token(CB.Name, ref k, '_'); TabN=int.Parse(TK.Token(CB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(CB.Name, ref k, '_')); Bi=int.Parse(TK.Token(CB.Name, ref k, '_'));
@@ -111,13 +119,13 @@ namespace Timer2 {
 			CurTProgra.TaskTabRAr[TabN][TaskN].TimersValue[Ti]=(CurTProgra.TaskTabRAr[TabN][TaskN].TimersType[Ti] ? CurTProgra.TaskTabRAr[TabN][TaskN].DefaultTimersValue[Ti] : 0);
 			TPBAr[(TTTabN, TTTaskN)][Ti].Value=(CurTProgra.TaskTabRAr[TabN][TaskN].TimersType[Ti] ? 100 : 0);
 			TLAr[(TTTabN, TTTaskN)][Ti].Text=TimeSpan.FromMilliseconds(CurTProgra.TaskTabRAr[TabN][TaskN].TimersValue[Ti]).ToString(@"hh\:mm\:ss");
-
+			
 			if (e.Button==MouseButtons.Left) {
 				CurTProgra.TaskTabRAr[TabN][TaskN].TimersRunning[Ti]=false;
 				TPBuAr[(TTTabN, TTTaskN)][Ti].Text="\u25B6";
 			}
 
-			CurTProgra.TaskTabRAr[TabN][TaskN].TimersDone[Ti]=false;
+			CurTProgra.TaskTabRAr[TabN][TaskN].TimersDone[Ti]=false; StopWav();
 			TPBuAr[(TTTabN, TTTaskN)][Ti].BackColor=SystemColors.Control; TLAr[(TTTabN, TTTaskN)][Ti].ForeColor=Color.Black;
 			// TSBuAr for play = 25B6, for pause = 23F8 
 		}
@@ -128,6 +136,7 @@ namespace Timer2 {
 			if (CurTProgra.TaskTabRAr[TabN][TaskN].TimersDone[Ti]) return;
 			CurTProgra.TaskTabRAr[TabN][TaskN].TimersRunning[Ti]=!CurTProgra.TaskTabRAr[TabN][TaskN].TimersRunning[Ti];
 			TSB.Text=(CurTProgra.TaskTabRAr[TabN][TaskN].TimersRunning[Ti] ? "\u23F8" : "\u25B6");
+			StopWav();
 		}
 
 		public void TaskEdit (object Sender, MouseEventArgs e) {
@@ -154,6 +163,7 @@ namespace Timer2 {
 
 		private void SMLoad_Click(object sender, EventArgs e) {
 			if (LFD.ShowDialog()==DialogResult.OK) {
+				NukeTasksGUI();
 				CurTProgra=TProgram.LoadFromFile(LFD.FileName);
 				LoadCurProgram();
 			}
@@ -166,7 +176,9 @@ namespace Timer2 {
 		}
 
 		public void LoadCurProgram() {
-			TC.TabPages.Clear(); TabGRAr.Clear(); BringToFront();
+			TabClearEdit=true; 
+
+			TC.TabPages.Clear(); TabClearEdit=false; FPAr.Clear(); TabGRAr.Clear(); BringToFront();
 			Text=CurTProgra.TPName;
 			
 			for (int i = 0; i<CurTProgra.TaskTabRAr.Count; i++) {
@@ -214,8 +226,10 @@ namespace Timer2 {
 			}
 		}
 
+
 		private void TC_TabIndexChanged(object sender, EventArgs e) {
 			// todo: need to move NewTaskButt below the last task
+			if (TabClearEdit) return;
 			MoveNTB(TC.SelectedIndex);
 
 		}
@@ -267,8 +281,8 @@ namespace Timer2 {
 
 			// =========== Generate the Todo
 			for (int i = 0; i<CurTask.CheckData.Count; i++) {
-				ChAr[(TabN, TaskN)].Add(new CheckBox { Text=CurTask.CheckData[i].Substring(1), TextAlign=ContentAlignment.MiddleCenter, FlatStyle = FlatStyle.Popup, BackColor = SystemColors.ControlDark });
-				if (CurTask.CheckData[i][0]=='0') ChAr[(TabN, TaskN)][i].Appearance=Appearance.Button;
+				ChAr[(TabN, TaskN)].Add(new CheckBox { Text=CurTask.CheckData[i].Substring(1), AutoSize = true, TextAlign=ContentAlignment.MiddleCenter, FlatStyle = FlatStyle.Popup, BackColor = SystemColors.ControlDark });
+				if (CurTask.CheckData[i][0]=='0') { ChAr[(TabN, TaskN)][i].Appearance=Appearance.Button; ChAr[(TabN, TaskN)][i].CheckedChanged+=CheckChecked; }
 				ToolTip.SetToolTip(ChAr[(TabN, TaskN)][i], CurTask.CheckDDS[i]);
 				TGP.Controls.Add(ChAr[(TabN, TaskN)][i]);
 				if (i==CurTask.CheckData.Count-1) TGP.SetFlowBreak(ChAr[(TabN, TaskN)][i], true);
@@ -302,25 +316,28 @@ namespace Timer2 {
 				// guess will change the progress bar values into 0 to 100, to avoid problems, and make the events handle the rest
 				TPBAr[(TabN, TaskN)].Add(new ProgressBar { Value=(TF2 ? 100 : 0), Visible=TF1 });
 				TNAr[(TabN, TaskN)].Add(new Label { Text=TName, Visible=TF1, TextAlign=ContentAlignment.MiddleCenter });
-				TLAr[(TabN, TaskN)].Add(new Label { Text=(TF2 ? TVal : 0).ToString(), Visible=!TF1, TextAlign=ContentAlignment.MiddleCenter, Font=new Font("Segoe UI", 14, FontStyle.Bold) });
+				TLAr[(TabN, TaskN)].Add(new Label { Text=(TF2 ? TimeSpan.FromMilliseconds(TVal).ToString(@"hh\:mm\:ss") : TimeSpan.FromMilliseconds(0).ToString(@"hh\:mm\:ss")), Visible=!TF1, TextAlign=ContentAlignment.MiddleCenter, Font=new Font("Segoe UI", 14, FontStyle.Bold) });
 				TGP.Controls.Add(TSBuAr[(TabN, TaskN)][i]); TGP.Controls.Add(TPBuAr[(TabN, TaskN)][i]); TGP.Controls.Add(TPBAr[(TabN, TaskN)][i]); TGP.Controls.Add(TLAr[(TabN, TaskN)][i]);
 				// i could add some kind of a tag to add a new line or not
 				//TGP.SetFlowBreak( (TF1? TLAr[(TabN, TaskN)][i]:TPBAr[(TabN, TaskN)][i]) , true);
 
-				ToolTip.SetToolTip(TSBuAr[(TabN, TaskN)][i], "Reset the time"); ToolTip.SetToolTip(TPBuAr[(TabN, TaskN)][i], "Play\\Pause the timer");
+				ToolTip.SetToolTip(TSBuAr[(TabN, TaskN)][i], "Reset the time " + (TF2? " to ": " of ") + TimeSpan.FromMilliseconds(TVal).ToString(@"hh\:mm\:ss")); ToolTip.SetToolTip(TPBuAr[(TabN, TaskN)][i], "Play\\Pause the timer");
 				ToolTip.SetToolTip(TPBAr[(TabN, TaskN)][i], TName); ToolTip.SetToolTip(TNAr[(TabN, TaskN)][i], TName); ToolTip.SetToolTip(TLAr[(TabN, TaskN)][i], TName);
 
 				// Add events
 				TSBuAr[(TabN, TaskN)][i].MouseDown+=Timer_StopButt; TPBuAr[(TabN, TaskN)][i].MouseDown+=Timer_PlayButt;
 
 				if (TF1) { } else { }
-				if (TF2) { CurTask.TimersValue[i]=TVal; }
+				if (TF2) { CurTask.TimersValue[i]=TVal;  }
 
 			}
 
+			// =========== add it to the list to Check reset or expire
+			TaskCheckTimeAr.Add((TabN, TaskN), false);
+
 			// =========== Add Controls
 			GBAr[(TabN, TaskN)].Controls.Add ( TDDSAr[(TabN, TaskN)] );
-			ToolTip.SetToolTip(TDDSAr[(TabN, TaskN)], CurTask.DDS);
+			ToolTip.SetToolTip(TDDSAr[(TabN, TaskN)], (CurTask.DDS != ""? CurTask.DDS: "This task have no description"));
 			TabGRAr[TabN].Controls.Add(GBAr[(TabN, TaskN)]);
 
 			// i could later work on making groub boxes free in the page, where you can change their position or have more than one groub box in the row
@@ -328,6 +345,11 @@ namespace Timer2 {
 			TDDSAr[(TabN, TaskN)].BringToFront(); TDDSAr[(TabN, TaskN)].MouseDown+=TaskEdit;
 		}
 		
+		public void NukeTasksGUI () {
+			TaskCheckTimeAr.Clear();
+			foreach (KeyValuePair<(int, int), GroupBox> GB in GBAr) { DeleteTaskGUI(GB.Key.Item1, GB.Key.Item2); }
+		}
+
 		public void DeleteTaskGUI (int TabN, int TaskN) {
 			if (!GBAr.ContainsKey((TabN, TaskN))) { System.Diagnostics.Debug.WriteLine("The given TabNumber or TaskNumber doesn't exists!"); return; }
 			FPAr[(TabN, TaskN)].Controls.Clear(); FPAr[(TabN, TaskN)].Dispose();
@@ -362,6 +384,13 @@ namespace Timer2 {
 						if ((TK.TimersType[i]&&TK.TimersValue[i]<=0)||(!TK.TimersType[i]&&TK.TimersValue[i]>=TK.DefaultTimersValue[i])) {
 							TK.TimersDone[i]=true; TK.TimersRunning[i]=false; TPBuAr[(TTTabN, TTTaskN)][i].BackColor=Color.Green; TPBuAr[(TTTabN, TTTaskN)][i].Text="\u25B6";
 							ToolTip.SetToolTip(TPBAr[(TTTabN, TTTaskN)][i], "Done!"); TLAr[(TTTabN, TTTaskN)][i].ForeColor=Color.Green;
+						
+							// either play a beep or a wave file
+							if (TK.TimersWavPath[i] !="") {
+								if (TK.TimersWavPath[i] =="Beep") System.Media.SystemSounds.Beep.Play();
+								else if (File.Exists(TK.TimersWavPath[i])) PlayWavFile(TK.TimersWavPath[i]);
+							}  
+							
 						}
 					}
 					TTTaskN++;
@@ -370,7 +399,31 @@ namespace Timer2 {
 				TTTabN++; TTTaskN=0;
 			}
 			TTTabN=TTTaskN=0;
+
+			FirePerMin--; System.Diagnostics.Debug.WriteLine("FirePerMin: "+FirePerMin);
+			if (FirePerMin<=0) { 
+				FirePerMin=600; 
+				System.Diagnostics.Debug.WriteLine("Expire time check!");
+				foreach ( KeyValuePair <(int, int), bool> CD in TaskCheckTimeAr ) {
+					if (CD.Value!=true) continue; 
+					if (CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].Days > 0) {
+
+					}
+
+					if (CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].Expire != null) {
+
+					}
+				}
+			}
 		}
 
-	}
+		private void PlayWavFile(string path) {
+			AlarmPlayer.Stop();
+			AlarmPlayer.SoundLocation=path; 
+			AlarmPlayer.Play(); // PlaySync() blocks, PlayLooping() loops
+		}
+
+		private void StopWav() { AlarmPlayer.Stop(); }
+
+		}
 }

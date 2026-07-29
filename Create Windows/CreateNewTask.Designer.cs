@@ -51,6 +51,11 @@
 			CounterList=new ListBox();
 			tabPage3=new TabPage();
 			groupBox1=new GroupBox();
+			groupBox4=new GroupBox();
+			TimerWavPath=new Label();
+			TimerWav3=new RadioButton();
+			TimerWav2=new RadioButton();
+			TimerWav1=new RadioButton();
 			TimerValueLabel=new Label();
 			label8=new Label();
 			TimerDDS=new TextBox();
@@ -77,6 +82,20 @@
 			TaskColor=new Button();
 			label13=new Label();
 			TaskDDS=new TextBox();
+			WFD=new OpenFileDialog();
+			TaskExpireDP=new DateTimePicker();
+			label14=new Label();
+			panel3=new Panel();
+			TaskResetDP=new DateTimePicker();
+			TaskResetDay6=new CheckBox();
+			TaskResetDay5=new CheckBox();
+			TaskResetDay3=new CheckBox();
+			TaskResetDay4=new CheckBox();
+			TaskResetDay2=new CheckBox();
+			TaskResetDay1=new CheckBox();
+			TaskResetRB2=new RadioButton();
+			TaskResetRB1=new RadioButton();
+			TaskResetDay7=new CheckBox();
 			TC.SuspendLayout();
 			tabPage1.SuspendLayout();
 			groupBox3.SuspendLayout();
@@ -85,9 +104,11 @@
 			((System.ComponentModel.ISupportInitialize)CounterToVal).BeginInit();
 			tabPage3.SuspendLayout();
 			groupBox1.SuspendLayout();
+			groupBox4.SuspendLayout();
 			panel2.SuspendLayout();
 			panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)TimerValue).BeginInit();
+			panel3.SuspendLayout();
 			SuspendLayout();
 			// 
 			// TC
@@ -95,7 +116,7 @@
 			TC.Controls.Add(tabPage1);
 			TC.Controls.Add(tabPage2);
 			TC.Controls.Add(tabPage3);
-			TC.Location=new Point(12, 70);
+			TC.Location=new Point(12, 147);
 			TC.Name="TC";
 			TC.SelectedIndex=0;
 			TC.Size=new Size(571, 371);
@@ -392,6 +413,7 @@
 			// 
 			// groupBox1
 			// 
+			groupBox1.Controls.Add(groupBox4);
 			groupBox1.Controls.Add(TimerValueLabel);
 			groupBox1.Controls.Add(label8);
 			groupBox1.Controls.Add(TimerDDS);
@@ -407,6 +429,64 @@
 			groupBox1.TabIndex=16;
 			groupBox1.TabStop=false;
 			groupBox1.Text="Timer Setting";
+			// 
+			// groupBox4
+			// 
+			groupBox4.Controls.Add(TimerWavPath);
+			groupBox4.Controls.Add(TimerWav3);
+			groupBox4.Controls.Add(TimerWav2);
+			groupBox4.Controls.Add(TimerWav1);
+			groupBox4.Location=new Point(9, 241);
+			groupBox4.Name="groupBox4";
+			groupBox4.Size=new Size(363, 74);
+			groupBox4.TabIndex=25;
+			groupBox4.TabStop=false;
+			groupBox4.Text="Alarm setting";
+			// 
+			// TimerWavPath
+			// 
+			TimerWavPath.AutoSize=true;
+			TimerWavPath.Location=new Point(6, 25);
+			TimerWavPath.Name="TimerWavPath";
+			TimerWavPath.Size=new Size(33, 15);
+			TimerWavPath.TabIndex=8;
+			TimerWavPath.Text="Beep";
+			TimerWavPath.MouseClick+=TimerWav3_MouseClick;
+			// 
+			// TimerWav3
+			// 
+			TimerWav3.AutoSize=true;
+			TimerWav3.Location=new Point(130, 49);
+			TimerWav3.Name="TimerWav3";
+			TimerWav3.Size=new Size(67, 19);
+			TimerWav3.TabIndex=7;
+			TimerWav3.Text="Wav file";
+			TimerWav3.UseVisualStyleBackColor=true;
+			TimerWav3.MouseClick+=TimerWav3_MouseClick;
+			// 
+			// TimerWav2
+			// 
+			TimerWav2.AutoSize=true;
+			TimerWav2.Checked=true;
+			TimerWav2.Location=new Point(73, 49);
+			TimerWav2.Name="TimerWav2";
+			TimerWav2.Size=new Size(51, 19);
+			TimerWav2.TabIndex=6;
+			TimerWav2.TabStop=true;
+			TimerWav2.Text="Beep";
+			TimerWav2.UseVisualStyleBackColor=true;
+			TimerWav2.CheckedChanged+=TimerWav2_CheckedChanged;
+			// 
+			// TimerWav1
+			// 
+			TimerWav1.AutoSize=true;
+			TimerWav1.Location=new Point(6, 49);
+			TimerWav1.Name="TimerWav1";
+			TimerWav1.Size=new Size(54, 19);
+			TimerWav1.TabIndex=5;
+			TimerWav1.Text="None";
+			TimerWav1.UseVisualStyleBackColor=true;
+			TimerWav1.CheckedChanged+=TimerWav1_CheckedChanged;
 			// 
 			// TimerValueLabel
 			// 
@@ -606,7 +686,7 @@
 			TaskOk.BackColor=Color.LimeGreen;
 			TaskOk.FlatStyle=FlatStyle.Flat;
 			TaskOk.Font=new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			TaskOk.Location=new Point(449, 443);
+			TaskOk.Location=new Point(449, 520);
 			TaskOk.Name="TaskOk";
 			TaskOk.Size=new Size(130, 44);
 			TaskOk.TabIndex=12;
@@ -619,7 +699,7 @@
 			TaskCancel.BackColor=Color.LimeGreen;
 			TaskCancel.FlatStyle=FlatStyle.Flat;
 			TaskCancel.Font=new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-			TaskCancel.Location=new Point(12, 443);
+			TaskCancel.Location=new Point(12, 520);
 			TaskCancel.Name="TaskCancel";
 			TaskCancel.Size=new Size(130, 44);
 			TaskCancel.TabIndex=11;
@@ -671,11 +751,158 @@
 			TaskDDS.Size=new Size(453, 23);
 			TaskDDS.TabIndex=22;
 			// 
+			// WFD
+			// 
+			WFD.FileName="Wave Files";
+			WFD.Filter="Wave files(*.wav)|*.wav";
+			// 
+			// TaskExpireDP
+			// 
+			TaskExpireDP.Checked=false;
+			TaskExpireDP.Location=new Point(121, 121);
+			TaskExpireDP.Name="TaskExpireDP";
+			TaskExpireDP.ShowCheckBox=true;
+			TaskExpireDP.Size=new Size(212, 23);
+			TaskExpireDP.TabIndex=24;
+			// 
+			// label14
+			// 
+			label14.AutoSize=true;
+			label14.Font=new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+			label14.Location=new Point(12, 125);
+			label14.Name="label14";
+			label14.Size=new Size(103, 17);
+			label14.TabIndex=25;
+			label14.Text="Task Expire date";
+			// 
+			// panel3
+			// 
+			panel3.Controls.Add(TaskResetDay7);
+			panel3.Controls.Add(TaskResetDay6);
+			panel3.Controls.Add(TaskResetDay5);
+			panel3.Controls.Add(TaskResetDay4);
+			panel3.Controls.Add(TaskResetDP);
+			panel3.Controls.Add(TaskResetDay3);
+			panel3.Controls.Add(TaskResetDay2);
+			panel3.Controls.Add(TaskResetDay1);
+			panel3.Controls.Add(TaskResetRB2);
+			panel3.Controls.Add(TaskResetRB1);
+			panel3.Location=new Point(10, 64);
+			panel3.Name="panel3";
+			panel3.Size=new Size(587, 56);
+			panel3.TabIndex=26;
+			// 
+			// TaskResetDP
+			// 
+			TaskResetDP.CustomFormat="hh:mm tt";
+			TaskResetDP.Format=DateTimePickerFormat.Custom;
+			TaskResetDP.Location=new Point(104, 26);
+			TaskResetDP.Name="TaskResetDP";
+			TaskResetDP.ShowUpDown=true;
+			TaskResetDP.Size=new Size(109, 23);
+			TaskResetDP.TabIndex=8;
+			TaskResetDP.Value=new DateTime(2026, 7, 29, 10, 0, 0, 0);
+			// 
+			// TaskResetDay6
+			// 
+			TaskResetDay6.AutoSize=true;
+			TaskResetDay6.Location=new Point(457, 7);
+			TaskResetDay6.Name="TaskResetDay6";
+			TaskResetDay6.Size=new Size(58, 19);
+			TaskResetDay6.TabIndex=7;
+			TaskResetDay6.Text="Friday";
+			TaskResetDay6.UseVisualStyleBackColor=true;
+			// 
+			// TaskResetDay5
+			// 
+			TaskResetDay5.AutoSize=true;
+			TaskResetDay5.Location=new Point(385, 7);
+			TaskResetDay5.Name="TaskResetDay5";
+			TaskResetDay5.Size=new Size(74, 19);
+			TaskResetDay5.TabIndex=6;
+			TaskResetDay5.Text="Thursday";
+			TaskResetDay5.UseVisualStyleBackColor=true;
+			// 
+			// TaskResetDay3
+			// 
+			TaskResetDay3.AutoSize=true;
+			TaskResetDay3.Location=new Point(234, 7);
+			TaskResetDay3.Name="TaskResetDay3";
+			TaskResetDay3.Size=new Size(69, 19);
+			TaskResetDay3.TabIndex=5;
+			TaskResetDay3.Text="Tuesday";
+			TaskResetDay3.UseVisualStyleBackColor=true;
+			// 
+			// TaskResetDay4
+			// 
+			TaskResetDay4.AutoSize=true;
+			TaskResetDay4.Location=new Point(301, 7);
+			TaskResetDay4.Name="TaskResetDay4";
+			TaskResetDay4.Size=new Size(87, 19);
+			TaskResetDay4.TabIndex=4;
+			TaskResetDay4.Text="Wednesday";
+			TaskResetDay4.UseVisualStyleBackColor=true;
+			// 
+			// TaskResetDay2
+			// 
+			TaskResetDay2.AutoSize=true;
+			TaskResetDay2.Location=new Point(168, 7);
+			TaskResetDay2.Name="TaskResetDay2";
+			TaskResetDay2.Size=new Size(70, 19);
+			TaskResetDay2.TabIndex=3;
+			TaskResetDay2.Text="Monday";
+			TaskResetDay2.UseVisualStyleBackColor=true;
+			// 
+			// TaskResetDay1
+			// 
+			TaskResetDay1.AutoSize=true;
+			TaskResetDay1.Location=new Point(104, 7);
+			TaskResetDay1.Name="TaskResetDay1";
+			TaskResetDay1.Size=new Size(65, 19);
+			TaskResetDay1.TabIndex=2;
+			TaskResetDay1.Text="Sunday";
+			TaskResetDay1.UseVisualStyleBackColor=true;
+			// 
+			// TaskResetRB2
+			// 
+			TaskResetRB2.AutoSize=true;
+			TaskResetRB2.Checked=true;
+			TaskResetRB2.Location=new Point(7, 30);
+			TaskResetRB2.Name="TaskResetRB2";
+			TaskResetRB2.Size=new Size(72, 19);
+			TaskResetRB2.TabIndex=1;
+			TaskResetRB2.TabStop=true;
+			TaskResetRB2.Text="No Reset";
+			TaskResetRB2.UseVisualStyleBackColor=true;
+			// 
+			// TaskResetRB1
+			// 
+			TaskResetRB1.AutoSize=true;
+			TaskResetRB1.Location=new Point(6, 6);
+			TaskResetRB1.Name="TaskResetRB1";
+			TaskResetRB1.Size=new Size(95, 19);
+			TaskResetRB1.TabIndex=0;
+			TaskResetRB1.Text="Task Reset on";
+			TaskResetRB1.UseVisualStyleBackColor=true;
+			// 
+			// TaskResetDay7
+			// 
+			TaskResetDay7.AutoSize=true;
+			TaskResetDay7.Location=new Point(513, 7);
+			TaskResetDay7.Name="TaskResetDay7";
+			TaskResetDay7.Size=new Size(72, 19);
+			TaskResetDay7.TabIndex=9;
+			TaskResetDay7.Text="Saturday";
+			TaskResetDay7.UseVisualStyleBackColor=true;
+			// 
 			// CreateNewTask
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
 			AutoScaleMode=AutoScaleMode.Font;
-			ClientSize=new Size(603, 508);
+			ClientSize=new Size(603, 578);
+			Controls.Add(panel3);
+			Controls.Add(label14);
+			Controls.Add(TaskExpireDP);
 			Controls.Add(label13);
 			Controls.Add(TaskDDS);
 			Controls.Add(TaskColor);
@@ -699,11 +926,15 @@
 			tabPage3.ResumeLayout(false);
 			groupBox1.ResumeLayout(false);
 			groupBox1.PerformLayout();
+			groupBox4.ResumeLayout(false);
+			groupBox4.PerformLayout();
 			panel2.ResumeLayout(false);
 			panel2.PerformLayout();
 			panel1.ResumeLayout(false);
 			panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)TimerValue).EndInit();
+			panel3.ResumeLayout(false);
+			panel3.PerformLayout();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -764,5 +995,25 @@
 		private Button TaskColor;
 		private Label label13;
 		private TextBox TaskDDS;
+		private GroupBox groupBox4;
+		private RadioButton TimerWav3;
+		private RadioButton TimerWav2;
+		private RadioButton TimerWav1;
+		private Label TimerWavPath;
+		private OpenFileDialog WFD;
+		private DateTimePicker TaskExpireDP;
+		private Label label14;
+		private Panel panel3;
+		private RadioButton TaskResetRB1;
+		private DateTimePicker dateTimePicker1;
+		private CheckBox TaskResetDay6;
+		private CheckBox TaskResetDay5;
+		private CheckBox TaskResetDay3;
+		private CheckBox TaskResetDay4;
+		private CheckBox TaskResetDay2;
+		private CheckBox TaskResetDay1;
+		private RadioButton TaskResetRB2;
+		public DateTimePicker TaskResetDP;
+		private CheckBox TaskResetDay7;
 	}
 }
