@@ -38,6 +38,8 @@ namespace Timer2 {
 
 		// ===== Track which task can expire or need reset
 		public static Dictionary<(int, int), bool> TaskCheckTimeAr = new Dictionary<(int, int), bool>();
+		public static Dictionary<(int, int), Label> TReAr = new Dictionary<(int, int), Label>(); // Task Reset date label
+		public static Dictionary<(int, int), Label> TExAr = new Dictionary<(int, int), Label>(); // Task Expire Date label
 
 		public Timer2() {
 			MainTimer=this; 
@@ -253,10 +255,12 @@ namespace Timer2 {
 			if (FPAr.ContainsKey((TabN, TaskN))) { System.Diagnostics.Debug.WriteLine("The Task Gui seems already exists, what went wrong?"); return; }
 			TPTask CurTask = CurTProgra.TaskTabRAr[TabN][TaskN];
 
-			// Initalize the Lists
+			// Initalize the Lists // .ToString(@"hh\:mm\:ss")
 			GBAr.Add((TabN, TaskN), new GroupBox { Name=("GP_"+TabN+"_"+TaskN), Text=CurTask.ID, Size=new Size(TC.Width-52, CurTask.GH), Location=new Point(6, 6+(TaskN >0? GBAr[(TabN, TaskN-1)].Location.Y + GBAr[(TabN, TaskN-1)].Height : 0)), BackColor=CurTask.TaskColor });
 			FPAr.Add((TabN, TaskN), new FlowLayoutPanel { Name=("FGP_"+TabN+"_"+TaskN), AutoSize=true, AutoScroll=true, Dock=DockStyle.Fill, Padding=new Padding(10) });
 			TDDSAr.Add((TabN, TaskN), new Button { Name=("TaskDDS_"+TabN+"_"+TaskN), Text="?", Size = new Size(19, 23), Location = new Point(GBAr[(TabN, TaskN)].Width - 21, 2), TextAlign=ContentAlignment.MiddleCenter, BackColor = SystemColors.ControlDark });
+			if (CurTask.Days > 0) TReAr.Add((TabN, TaskN), new Label { Name=("TaskResetDate_"+TabN+"_"+TaskN)	    , Text = "Next Reset: " + CurTask.ExpectedNextReset.Value.Date.ToString(@"MM\\dd\\yyyy") + " At " + new DateTime(new TimeSpan(CurTask.ResetTime.Item1,CurTask.ResetTime.Item2, 0).Ticks).ToString(@"hh\:mm tt"), AutoSize = true, Location = new Point(GBAr[(TabN, TaskN)].Location.X+12, GBAr[(TabN, TaskN)].Location.Y+GBAr[(TabN, TaskN)].Height - 8)}); 
+			if (CurTask.Expire != null) TExAr.Add((TabN, TaskN), new Label { Name=("TaskExpireDate_"+TabN+"_"+TaskN), Text = "Expire: " + CurTask.Expire.ToString(), AutoSize = true, Location = new Point(GBAr[(TabN, TaskN)].Location.X+GBAr[(TabN, TaskN)].Width - 30, GBAr[(TabN, TaskN)].Location.Y+GBAr[(TabN, TaskN)].Height -8)});
 			
 			//SBAr.Add((TabN, TaskN), new VScrollBar	{ Name=("SB_"+TabN+"_"+TaskN), Maximum = 10, Visible = false  });
 			ChAr.Add((TabN, TaskN), new List<CheckBox>());
@@ -333,10 +337,12 @@ namespace Timer2 {
 			}
 
 			// =========== add it to the list to Check reset or expire
-			TaskCheckTimeAr.Add((TabN, TaskN), false);
+			TaskCheckTimeAr.Add((TabN, TaskN), (CurTask.Days > 0 || CurTask.Expire != null) );
 
 			// =========== Add Controls
-			GBAr[(TabN, TaskN)].Controls.Add ( TDDSAr[(TabN, TaskN)] );
+			GBAr[(TabN, TaskN)].Controls.Add(TDDSAr[(TabN, TaskN)]); 
+			if (CurTask.Days > 0)		{ TabGRAr[TabN].Controls.Add (TReAr[(TabN, TaskN)]); TReAr[(TabN, TaskN)].BringToFront(); }
+			if (CurTask.Expire != null) { TabGRAr[TabN].Controls.Add (TExAr[(TabN, TaskN)]); TExAr[(TabN, TaskN)].BringToFront(); TExAr[(TabN, TaskN)].Location=new Point(GBAr[(TabN, TaskN)].Location.X + GBAr[(TabN, TaskN)].Width-TExAr[(TabN, TaskN)].Width-5,GBAr[(TabN, TaskN)].Location.Y+GBAr[(TabN, TaskN)].Height-8); }
 			ToolTip.SetToolTip(TDDSAr[(TabN, TaskN)], (CurTask.DDS != ""? CurTask.DDS: "This task have no description"));
 			TabGRAr[TabN].Controls.Add(GBAr[(TabN, TaskN)]);
 
@@ -358,6 +364,7 @@ namespace Timer2 {
 			GBAr.Remove((TabN, TaskN)); FPAr.Remove((TabN, TaskN)); TDDSAr.Remove((TabN, TaskN));
 			ChAr.Remove((TabN, TaskN)); CBuAr.Remove((TabN, TaskN)); CLAr.Remove((TabN, TaskN));
 			TNAr.Remove((TabN, TaskN)); TSBuAr.Remove((TabN, TaskN)); TPBuAr.Remove((TabN, TaskN)); TPBAr.Remove((TabN, TaskN)); TLAr.Remove((TabN, TaskN));
+			TaskCheckTimeAr.Remove((TabN, TaskN));
 			System.Diagnostics.Debug.WriteLine("Task GUI Deleted: Tab= "+TabN+" Task= "+TaskN);
 		}
 
@@ -400,14 +407,20 @@ namespace Timer2 {
 			}
 			TTTabN=TTTaskN=0;
 
-			FirePerMin--; System.Diagnostics.Debug.WriteLine("FirePerMin: "+FirePerMin);
+			FirePerMin--; //System.Diagnostics.Debug.WriteLine("FirePerMin: "+FirePerMin);
 			if (FirePerMin<=0) { 
 				FirePerMin=600; 
 				System.Diagnostics.Debug.WriteLine("Expire time check!");
 				foreach ( KeyValuePair <(int, int), bool> CD in TaskCheckTimeAr ) {
 					if (CD.Value!=true) continue; 
 					if (CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].Days > 0) {
+						if (DateTime.Now > CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].ExpectedNextReset) {
+							System.Diagnostics.Debug.WriteLine("Reset Time !!! Ding Ding Ding!!!!");
+							System.Diagnostics.Debug.WriteLine("Reset Time !!! Ding Ding Ding!!!!");
+							System.Diagnostics.Debug.WriteLine("Reset Time !!! Ding Ding Ding!!!!");
 
+
+						}
 					}
 
 					if (CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].Expire != null) {

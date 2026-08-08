@@ -50,7 +50,7 @@ namespace Timer2 {
 		private void TaskOk_Click(object sender, EventArgs e) {
 			if (TaskName.Text=="") { TaskName.BackColor=Color.Red; return; }
 			STask.DDS=TaskDDS.Text;
-			STask.Days = (TaskResetRB1.Checked ? (byte) ((TaskResetDay1.Checked? 1 : 0) + (TaskResetDay2.Checked ? 2 : 0) + (TaskResetDay3.Checked ? 4 : 0) + (TaskResetDay4.Checked ? 8 : 0) + (TaskResetDay5.Checked ? 16 : 0) + (TaskResetDay6.Checked ? 32 : 0) + (TaskResetDay6.Checked ? 64 : 0)) : (byte)0 );
+			STask.Days = (TaskResetRB1.Checked ? (byte) ((TaskResetDay1.Checked? 1 : 0) + (TaskResetDay2.Checked ? 2 : 0) + (TaskResetDay3.Checked ? 4 : 0) + (TaskResetDay4.Checked ? 8 : 0) + (TaskResetDay5.Checked ? 16 : 0) + (TaskResetDay6.Checked ? 32 : 0) + (TaskResetDay7.Checked ? 64 : 0)) : (byte)0 );
 			STask.ResetTime = (TaskResetDP.Value.Hour, TaskResetDP.Value.Minute);
 			STask.Expire = (TaskExpireDP.Checked ? (DateTime?)TaskExpireDP.Value : null);
 

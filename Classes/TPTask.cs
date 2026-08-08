@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace Timer2 {
@@ -33,6 +34,9 @@ namespace Timer2 {
 			for (int i = 1; i < Timer2.CurTProgra.TaskTabRAr[TabN].TaskAr.Count; i++) 
 				Timer2.GBAr[(TabN, i)].Location = new Point( 6, Timer2.GBAr[(TabN, i-1)].Location.Y+Timer2.GBAr[(TabN, i-1)].Height + 6);
 
+			Timer2.TDDSAr[(TabN, TaskN)].Location=new Point(Timer2.GBAr[(TabN, TaskN)].Width-21, 2);
+			if (Timer2.TReAr.ContainsKey((TabN, TaskN))) Timer2.TReAr[(TabN, TaskN)].Location=new Point(Timer2.GBAr[(TabN, TaskN)].Location.X +	12, Timer2.GBAr[(TabN, TaskN)].Location.Y+ Timer2.GBAr[(TabN, TaskN)].Height-8);
+			if (Timer2.TExAr.ContainsKey((TabN, TaskN))) Timer2.TExAr[(TabN, TaskN)].Location=new Point(Timer2.GBAr[(TabN, TaskN)].Location.X + Timer2.GBAr[(TabN, TaskN)].Width-Timer2.TExAr[(TabN, TaskN)].Width-5,Timer2.GBAr[(TabN, TaskN)].Location.Y+Timer2.GBAr[(TabN, TaskN)].Height-8);
 			Timer2.MainTimer.MoveNTB(TabN);
 			
 		};
@@ -72,7 +76,7 @@ namespace Timer2 {
 	public class TPTask {
 		public string ID, DDS; public int GH = 100;
 		public byte Days; public (int, int) ResetTime; // HH:MM
-		public DateTime? Expire = null;
+		public DateTime? Expire = null, ExpectedNextReset; public DateTime LastCheckedTime = DateTime.Now;
 		public Color TaskColor = Color.FromArgb(255, 255, 255);
 
 		// i Could replace the data with classes: Check, Counter and Timer. Structs are immuniable
@@ -110,6 +114,7 @@ namespace Timer2 {
 			//foreach (int TTD in TimeTypeList) TimeType.Add(TTD);
 			foreach (string CD in TimersNameList) { TimersName.Add(CD); TimersRunning.Add(false); }
 			foreach (string CD in TimersDDSList) TimersDDS.Add(CD);
+			GetNextResetTime();
 		}
 
 		public TPTask (string TaskData) { 
@@ -140,6 +145,7 @@ namespace Timer2 {
 				TimersType.Add(ttb);
 			}
 
+			GetNextResetTime();
 		}
 
 		public string Save(string NewID = "") {
@@ -163,6 +169,24 @@ namespace Timer2 {
 		}
 
 		public TPTask Clone(string NewID = "") { return new TPTask(Save(NewID)); }
+
+		public void GetNextResetTime() {
+			if (Days==0) { ExpectedNextReset =  null; }
+			DateTime CheckedDay = LastCheckedTime;
+			for (int i = 0; i < 7; i++) {
+				CheckedDay = LastCheckedTime.Date.AddDays(i);
+				if ((Days & (1 << (int)CheckedDay.DayOfWeek)) != 0) break;
+			}
+
+			DateTime? NextReset = new DateTime(CheckedDay.Year, CheckedDay.Month, CheckedDay.Day, ResetTime.Item1, ResetTime.Item2, 0);
+			if (NextReset <= LastCheckedTime) { ExpectedNextReset = NextReset; return; }
+			for (int i = 7; i < 14; i++) {
+				CheckedDay = LastCheckedTime.Date.AddDays(i);
+				if ((Days & (1 << (int)CheckedDay.DayOfWeek)) != 0) break;
+			}
+
+			ExpectedNextReset = NextReset;
+		}
 		// public void SaveToFile (string Location = "") {}
 	}
 
