@@ -8,7 +8,8 @@ namespace Timer2 {
 		public static TaskTabsEditor TTEMenu = new TaskTabsEditor();
 		public static CreateNewTask NewTaskMenu = new CreateNewTask();
 
-		public static TProgram CurTProgra;
+		public static TProgram CurTProgra; private static string _CurTPrograFilePath = "";
+		public static string CurTPrograFilePath { get { return _CurTPrograFilePath; } set { _CurTPrograFilePath=value; MainTimer.SMSave.Enabled=(_CurTPrograFilePath!=""); } }
 		static System.Media.SoundPlayer AlarmPlayer = new System.Media.SoundPlayer();
 
 		public static bool EditMode = false, TabClearEdit = false; static int FirePerMin = 0;
@@ -44,16 +45,17 @@ namespace Timer2 {
 		public Timer2() {
 			MainTimer=this; 
 			InitializeComponent(); NewTaskButt.Width=TC.Width-52;
-			
+
 			if (File.Exists("Autoload.txt")) {
 				string TPFN;
-				using (StreamReader SR = new StreamReader("Autoload.txt")) { TPFN = SR.ReadToEnd(); }
+				using (StreamReader SR = new StreamReader("Autoload.txt")) { TPFN=SR.ReadToEnd(); }
 				if (File.Exists(TPFN)) {
 					CurTProgra=TProgram.LoadFromFile(TPFN);
-					LoadCurProgram(); Timer1.Enabled=true; FirePerMin= 600 - DateTime.Now.Second*10; return;
+					CurTPrograFilePath=TPFN;
+					LoadCurProgram(); Timer1.Enabled=true; FirePerMin=600-DateTime.Now.Second*10; return;
 				}
 			}
-			
+
 			if (CurTProgra==null) {
 				CurTProgra=new TProgram("Timer2 Def", "The Default program");
 				CurTProgra.TaskTabRAr.Add(new TaskTabR("Tab1", "Daily", "A task collection that represent Daily Tasks."));
@@ -86,12 +88,12 @@ namespace Timer2 {
 				e.ToolTipSize = sz;
 			};
 			*/
-			
-			Timer1.Enabled=true; 
-			FirePerMin= 600 - DateTime.Now.Second*10;
+
+			Timer1.Enabled=true;
+			FirePerMin=600-DateTime.Now.Second*10;
 		}
 
-		public static void ReturnToTimer () { MainTimer.Enabled=true; Timer2.MainTimer.Enabled=true; MainTimer.TopMost=true; MainTimer.TopMost=false; }
+		public static void ReturnToTimer() { MainTimer.Enabled=true; Timer2.MainTimer.Enabled=true; MainTimer.TopMost=true; MainTimer.TopMost=false; }
 
 		#region Events 
 		/*public void Task_GB_SB_ScrollAction (object Sender, ScrollEventArgs e) { 
@@ -100,7 +102,15 @@ namespace Timer2 {
 			FPAr[(TabN, TaskN)].Location=new Point(FPAr[(TabN, TaskN)].Location.X, -SB.Value);
 		}*/
 
-		public void CheckChecked (object sender, EventArgs e) { ((CheckBox)sender).BackColor = ((CheckBox)sender).Checked ? Color.Green : Color.LightGray; }
+		public void CheckChecked(object sender, EventArgs e) {
+			CheckBox CB = (CheckBox)sender;
+
+			int k = 0, TabN, TaskN, Ci;
+			TK.Token(CB.Name, ref k, '_'); TabN=int.Parse(TK.Token(CB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(CB.Name, ref k, '_')); Ci=int.Parse(TK.Token(CB.Name, ref k, '_'));
+			if (CurTProgra.TaskTabRAr[TabN][TaskN].CheckData[Ci][1]=='0') CB.BackColor=CB.Checked ? Color.Green : Color.LightGray;
+			CurTProgra.TaskTabRAr[TabN][TaskN].CheckData[Ci]=(CB.Checked ? "1" : "0")+CurTProgra.TaskTabRAr[TabN][TaskN].CheckData[Ci].Substring(1);
+		}
+
 		public void Counter_MouseDown(object Sender, MouseEventArgs e) {
 			int k = 0, TabN, TaskN, Bi, BVal; Button CB = (Button)Sender;
 			TK.Token(CB.Name, ref k, '_'); TabN=int.Parse(TK.Token(CB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(CB.Name, ref k, '_')); Bi=int.Parse(TK.Token(CB.Name, ref k, '_'));
@@ -121,7 +131,7 @@ namespace Timer2 {
 			CurTProgra.TaskTabRAr[TabN][TaskN].TimersValue[Ti]=(CurTProgra.TaskTabRAr[TabN][TaskN].TimersType[Ti] ? CurTProgra.TaskTabRAr[TabN][TaskN].DefaultTimersValue[Ti] : 0);
 			TPBAr[(TTTabN, TTTaskN)][Ti].Value=(CurTProgra.TaskTabRAr[TabN][TaskN].TimersType[Ti] ? 100 : 0);
 			TLAr[(TTTabN, TTTaskN)][Ti].Text=TimeSpan.FromMilliseconds(CurTProgra.TaskTabRAr[TabN][TaskN].TimersValue[Ti]).ToString(@"hh\:mm\:ss");
-			
+
 			if (e.Button==MouseButtons.Left) {
 				CurTProgra.TaskTabRAr[TabN][TaskN].TimersRunning[Ti]=false;
 				TPBuAr[(TTTabN, TTTaskN)][Ti].Text="\u25B6";
@@ -141,12 +151,20 @@ namespace Timer2 {
 			StopWav();
 		}
 
-		public void TaskEdit (object Sender, MouseEventArgs e) {
+		public void TaskEdit(object Sender, MouseEventArgs e) {
 			if (EditMode) {
 				int k = 0, TabN, TaskN, Ti; Button TSB = (Button)Sender;
 				TK.Token(TSB.Name, ref k, '_'); TabN=int.Parse(TK.Token(TSB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(TSB.Name, ref k, '_'));
 				CreateNewTask.CurTaskBar=TabN; CreateNewTask.CurTaskN=TaskN;
 				NewTaskMenu.EditTask(CurTProgra.TaskTabRAr[TabN][TaskN]); NewTaskMenu.Show();
+			} else {
+				int k = 0, TabN, TaskN, Ti; Button TSB = (Button)Sender;
+				TK.Token(TSB.Name, ref k, '_'); TabN=int.Parse(TK.Token(TSB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(TSB.Name, ref k, '_'));
+				if (ResetTester.Value>CurTProgra.TaskTabRAr[TabN].TaskAr[TaskN].ExpectedNextReset) {
+					CurTProgra.TaskTabRAr[TabN].TaskAr[TaskN].GetNextResetTime(ResetTester.Value);
+					TReAr[(TabN, TaskN)].Text="Next Reset: "+CurTProgra.TaskTabRAr[TabN].TaskAr[TaskN].ExpectedNextReset.Value.Date.ToString(@"MM\\dd\\yyyy")+" At "+new DateTime(new TimeSpan(CurTProgra.TaskTabRAr[TabN].TaskAr[TaskN].ResetTime.Item1, CurTProgra.TaskTabRAr[TabN].TaskAr[TaskN].ResetTime.Item2, 0).Ticks).ToString(@"hh\:mm tt");
+					ResetTaskGUI(TabN, TaskN);
+				}
 			}
 		}
 
@@ -158,6 +176,12 @@ namespace Timer2 {
 		}
 
 		private void SMSave_Click(object sender, EventArgs e) {
+			if (CurTPrograFilePath=="") return;
+			CurTProgra.SaveToFile(Path.GetFileName(CurTPrograFilePath), Path.GetDirectoryName(CurTPrograFilePath)??"");
+			System.Media.SystemSounds.Beep.Play();
+		}
+
+		private void SMASave_Click(object sender, EventArgs e) {
 			if (SFD.ShowDialog()==DialogResult.OK)
 				CurTProgra.SaveToFile(Path.GetFileName(SFD.FileName)??"", Path.GetDirectoryName(SFD.FileName)??"");
 
@@ -165,7 +189,7 @@ namespace Timer2 {
 
 		private void SMLoad_Click(object sender, EventArgs e) {
 			if (LFD.ShowDialog()==DialogResult.OK) {
-				NukeTasksGUI();
+				NukeTasksGUI(); CurTPrograFilePath=LFD.FileName;
 				CurTProgra=TProgram.LoadFromFile(LFD.FileName);
 				LoadCurProgram();
 			}
@@ -178,11 +202,11 @@ namespace Timer2 {
 		}
 
 		public void LoadCurProgram() {
-			TabClearEdit=true; 
+			TabClearEdit=true;
 
 			TC.TabPages.Clear(); TabClearEdit=false; FPAr.Clear(); TabGRAr.Clear(); BringToFront();
 			Text=CurTProgra.TPName;
-			
+
 			for (int i = 0; i<CurTProgra.TaskTabRAr.Count; i++) {
 				TabGRAr.Add(new Panel { Location=new Point(3, 3), Size=new Size(Width-35, Height-100), AutoSize=true, AutoScroll=true, Dock=DockStyle.Fill });
 				TC.TabPages.Add(new TabPage { Name="Tab"+i, Text=CurTProgra.TaskTabRAr[i].ID, BackColor=Color.White });
@@ -192,7 +216,16 @@ namespace Timer2 {
 
 		}
 
-		
+		private bool CloseFlag = false;
+		private void Timer2_FormClosing(object sender, FormClosingEventArgs e) {
+			if (!CloseFlag) { e.Cancel=true; Hide(); TimerNotifyIcon.Visible=true; } 
+			//else base.OnFormClosing(e);
+		}
+
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e) {
+			CloseFlag=true; Close();
+		}
+
 		#endregion
 
 		#region Edit Region
@@ -202,11 +235,11 @@ namespace Timer2 {
 
 		// this function will turn Edit Mode on\off
 		public void EnterEditMode() {
-			MoveNTB(TC.SelectedIndex); 
+			MoveNTB(TC.SelectedIndex);
 			EditMode=!EditMode;
 			EditMTabs.Visible=NewTaskButt.Visible=EditMode;
 
-			foreach (KeyValuePair<(int, int), Button> TDD in TDDSAr) TDD.Value.Text = (EditMode?"✎":"?");
+			foreach (KeyValuePair<(int, int), Button> TDD in TDDSAr) TDD.Value.Text=(EditMode ? "✎" : "?");
 		}
 
 
@@ -236,10 +269,10 @@ namespace Timer2 {
 
 		}
 
-		public void MoveNTB (int tab) {
+		public void MoveNTB(int tab) {
 			Timer2.MainTimer.NewTaskButt.Parent?.Controls.Remove(Timer2.MainTimer.NewTaskButt);
 			Timer2.TabGRAr[tab].Controls.Add(Timer2.MainTimer.NewTaskButt);
-			Timer2.MainTimer.NewTaskButt.Location=new Point(6, (Timer2.CurTProgra.TaskTabRAr[tab].TaskAr.Count == 0? 6 : Timer2.GBAr[(tab, Timer2.CurTProgra.TaskTabRAr[tab].TaskAr.Count-1)].Location.Y+Timer2.GBAr[(tab, Timer2.CurTProgra.TaskTabRAr[tab].TaskAr.Count-1)].Height+6));
+			Timer2.MainTimer.NewTaskButt.Location=new Point(6, (Timer2.CurTProgra.TaskTabRAr[tab].TaskAr.Count==0 ? 6 : Timer2.GBAr[(tab, Timer2.CurTProgra.TaskTabRAr[tab].TaskAr.Count-1)].Location.Y+Timer2.GBAr[(tab, Timer2.CurTProgra.TaskTabRAr[tab].TaskAr.Count-1)].Height+6));
 		}
 
 		private void NewTaskButt_Click(object sender, EventArgs e) {
@@ -256,12 +289,12 @@ namespace Timer2 {
 			TPTask CurTask = CurTProgra.TaskTabRAr[TabN][TaskN];
 
 			// Initalize the Lists // .ToString(@"hh\:mm\:ss")
-			GBAr.Add((TabN, TaskN), new GroupBox { Name=("GP_"+TabN+"_"+TaskN), Text=CurTask.ID, Size=new Size(TC.Width-52, CurTask.GH), Location=new Point(6, 6+(TaskN >0? GBAr[(TabN, TaskN-1)].Location.Y + GBAr[(TabN, TaskN-1)].Height : 0)), BackColor=CurTask.TaskColor });
+			GBAr.Add((TabN, TaskN), new GroupBox { Name=("GP_"+TabN+"_"+TaskN), Text=CurTask.ID, Size=new Size(TC.Width-52, CurTask.GH), Location=new Point(6, 6+(TaskN>0 ? GBAr[(TabN, TaskN-1)].Location.Y+GBAr[(TabN, TaskN-1)].Height : 0)), BackColor=CurTask.TaskColor });
 			FPAr.Add((TabN, TaskN), new FlowLayoutPanel { Name=("FGP_"+TabN+"_"+TaskN), AutoSize=true, AutoScroll=true, Dock=DockStyle.Fill, Padding=new Padding(10) });
-			TDDSAr.Add((TabN, TaskN), new Button { Name=("TaskDDS_"+TabN+"_"+TaskN), Text="?", Size = new Size(19, 23), Location = new Point(GBAr[(TabN, TaskN)].Width - 21, 2), TextAlign=ContentAlignment.MiddleCenter, BackColor = SystemColors.ControlDark });
-			if (CurTask.Days > 0) TReAr.Add((TabN, TaskN), new Label { Name=("TaskResetDate_"+TabN+"_"+TaskN)	    , Text = "Next Reset: " + CurTask.ExpectedNextReset.Value.Date.ToString(@"MM\\dd\\yyyy") + " At " + new DateTime(new TimeSpan(CurTask.ResetTime.Item1,CurTask.ResetTime.Item2, 0).Ticks).ToString(@"hh\:mm tt"), AutoSize = true, Location = new Point(GBAr[(TabN, TaskN)].Location.X+12, GBAr[(TabN, TaskN)].Location.Y+GBAr[(TabN, TaskN)].Height - 8)}); 
-			if (CurTask.Expire != null) TExAr.Add((TabN, TaskN), new Label { Name=("TaskExpireDate_"+TabN+"_"+TaskN), Text = "Expire: " + CurTask.Expire.ToString(), AutoSize = true, Location = new Point(GBAr[(TabN, TaskN)].Location.X+GBAr[(TabN, TaskN)].Width - 30, GBAr[(TabN, TaskN)].Location.Y+GBAr[(TabN, TaskN)].Height -8)});
-			
+			TDDSAr.Add((TabN, TaskN), new Button { Name=("TaskDDS_"+TabN+"_"+TaskN), Text="?", Size=new Size(19, 23), Location=new Point(GBAr[(TabN, TaskN)].Width-21, 2), TextAlign=ContentAlignment.MiddleCenter, BackColor=SystemColors.ControlDark });
+			if (CurTask.Days>0) TReAr.Add((TabN, TaskN), new Label { Name=("TaskResetDate_"+TabN+"_"+TaskN), Text="Next Reset: "+(CurTask.ExpectedNextReset!=null ? CurTask.ExpectedNextReset.Value.Date.ToString(@"MM\\dd\\yyyy")+" At "+new DateTime(new TimeSpan(CurTask.ResetTime.Item1, CurTask.ResetTime.Item2, 0).Ticks).ToString(@"hh\:mm tt") : ""), AutoSize=true, Location=new Point(GBAr[(TabN, TaskN)].Location.X+12, GBAr[(TabN, TaskN)].Location.Y+GBAr[(TabN, TaskN)].Height-8) });
+			if (CurTask.Expire!=null) TExAr.Add((TabN, TaskN), new Label { Name=("TaskExpireDate_"+TabN+"_"+TaskN), Text="Expire: "+CurTask.Expire.ToString(), AutoSize=true, Location=new Point(GBAr[(TabN, TaskN)].Location.X+GBAr[(TabN, TaskN)].Width-30, GBAr[(TabN, TaskN)].Location.Y+GBAr[(TabN, TaskN)].Height-8) });
+
 			//SBAr.Add((TabN, TaskN), new VScrollBar	{ Name=("SB_"+TabN+"_"+TaskN), Maximum = 10, Visible = false  });
 			ChAr.Add((TabN, TaskN), new List<CheckBox>());
 			CBuAr.Add((TabN, TaskN), new List<Button>());
@@ -285,8 +318,12 @@ namespace Timer2 {
 
 			// =========== Generate the Todo
 			for (int i = 0; i<CurTask.CheckData.Count; i++) {
-				ChAr[(TabN, TaskN)].Add(new CheckBox { Text=CurTask.CheckData[i].Substring(1), AutoSize = true, TextAlign=ContentAlignment.MiddleCenter, FlatStyle = FlatStyle.Popup, BackColor = SystemColors.ControlDark });
-				if (CurTask.CheckData[i][0]=='0') { ChAr[(TabN, TaskN)][i].Appearance=Appearance.Button; ChAr[(TabN, TaskN)][i].CheckedChanged+=CheckChecked; }
+				ChAr[(TabN, TaskN)].Add(new CheckBox {
+					Name=("Check_"+TabN+"_"+TaskN+"_"+i), Text=CurTask.CheckData[i].Substring(2),
+					Checked=(CurTask.CheckData[i][0]=='1'), AutoSize=true, TextAlign=ContentAlignment.MiddleCenter, FlatStyle=FlatStyle.Popup, BackColor=SystemColors.ControlDark
+				});
+				if (CurTask.CheckData[i][1]=='0') { ChAr[(TabN, TaskN)][i].Appearance=Appearance.Button; ChAr[(TabN, TaskN)][i].BackColor=ChAr[(TabN, TaskN)][i].Checked ? Color.Green : Color.LightGray; }
+				ChAr[(TabN, TaskN)][i].CheckedChanged+=CheckChecked;
 				ToolTip.SetToolTip(ChAr[(TabN, TaskN)][i], CurTask.CheckDDS[i]);
 				TGP.Controls.Add(ChAr[(TabN, TaskN)][i]);
 				if (i==CurTask.CheckData.Count-1) TGP.SetFlowBreak(ChAr[(TabN, TaskN)][i], true);
@@ -299,7 +336,7 @@ namespace Timer2 {
 				string ConDDS = CurTask.CountersDDS[i];
 
 				CLAr[(TabN, TaskN)].Add(new Label { Text=ConName, TextAlign=ContentAlignment.MiddleCenter });
-				CBuAr[(TabN, TaskN)].Add(new Button { Name=("CB_"+TabN+"_"+TaskN+"_"+i), Text="0\\"+ConTo, TextAlign=ContentAlignment.MiddleCenter, BackColor = SystemColors.ControlDark});
+				CBuAr[(TabN, TaskN)].Add(new Button { Name=("CB_"+TabN+"_"+TaskN+"_"+i), Text="0\\"+ConTo, TextAlign=ContentAlignment.MiddleCenter, BackColor=SystemColors.ControlDark });
 
 				CBuAr[(TabN, TaskN)][i].MouseDown+=Counter_MouseDown;
 				TGP.Controls.Add(CLAr[(TabN, TaskN)][i]); TGP.Controls.Add(CBuAr[(TabN, TaskN)][i]);
@@ -314,8 +351,8 @@ namespace Timer2 {
 				string TDDS = CurTask.TimersDDS[i];
 				int TimerType = int.Parse(CurTask.TimersName[i][0].ToString());
 				bool TF1 = ((TimerType&1)==1), TF2 = ((TimerType&2)==2); // digit\bar and down\up
-				TSBuAr[(TabN, TaskN)].Add(new Button { Name=("TSB_"+TabN+"_"+TaskN+"_"+i), Text="\u23F9", Width=30, TextAlign=ContentAlignment.MiddleCenter, BackColor = SystemColors.ControlDark });
-				TPBuAr[(TabN, TaskN)].Add(new Button { Name=("TPB_"+TabN+"_"+TaskN+"_"+i), Text="\u25B6", Width=30, TextAlign=ContentAlignment.MiddleCenter, BackColor = SystemColors.ControlDark });
+				TSBuAr[(TabN, TaskN)].Add(new Button { Name=("TSB_"+TabN+"_"+TaskN+"_"+i), Text="\u23F9", Width=30, TextAlign=ContentAlignment.MiddleCenter, BackColor=SystemColors.ControlDark });
+				TPBuAr[(TabN, TaskN)].Add(new Button { Name=("TPB_"+TabN+"_"+TaskN+"_"+i), Text="\u25B6", Width=30, TextAlign=ContentAlignment.MiddleCenter, BackColor=SystemColors.ControlDark });
 
 				// guess will change the progress bar values into 0 to 100, to avoid problems, and make the events handle the rest
 				TPBAr[(TabN, TaskN)].Add(new ProgressBar { Value=(TF2 ? 100 : 0), Visible=TF1 });
@@ -325,38 +362,38 @@ namespace Timer2 {
 				// i could add some kind of a tag to add a new line or not
 				//TGP.SetFlowBreak( (TF1? TLAr[(TabN, TaskN)][i]:TPBAr[(TabN, TaskN)][i]) , true);
 
-				ToolTip.SetToolTip(TSBuAr[(TabN, TaskN)][i], "Reset the time " + (TF2? " to ": " of ") + TimeSpan.FromMilliseconds(TVal).ToString(@"hh\:mm\:ss")); ToolTip.SetToolTip(TPBuAr[(TabN, TaskN)][i], "Play\\Pause the timer");
+				ToolTip.SetToolTip(TSBuAr[(TabN, TaskN)][i], "Reset the time "+(TF2 ? " to " : " of ")+TimeSpan.FromMilliseconds(TVal).ToString(@"hh\:mm\:ss")); ToolTip.SetToolTip(TPBuAr[(TabN, TaskN)][i], "Play\\Pause the timer");
 				ToolTip.SetToolTip(TPBAr[(TabN, TaskN)][i], TName); ToolTip.SetToolTip(TNAr[(TabN, TaskN)][i], TName); ToolTip.SetToolTip(TLAr[(TabN, TaskN)][i], TName);
 
 				// Add events
 				TSBuAr[(TabN, TaskN)][i].MouseDown+=Timer_StopButt; TPBuAr[(TabN, TaskN)][i].MouseDown+=Timer_PlayButt;
 
 				if (TF1) { } else { }
-				if (TF2) { CurTask.TimersValue[i]=TVal;  }
+				if (TF2) { CurTask.TimersValue[i]=TVal; }
 
 			}
 
 			// =========== add it to the list to Check reset or expire
-			TaskCheckTimeAr.Add((TabN, TaskN), (CurTask.Days > 0 || CurTask.Expire != null) );
+			TaskCheckTimeAr.Add((TabN, TaskN), (CurTask.Days>0||CurTask.Expire!=null));
 
 			// =========== Add Controls
-			GBAr[(TabN, TaskN)].Controls.Add(TDDSAr[(TabN, TaskN)]); 
-			if (CurTask.Days > 0)		{ TabGRAr[TabN].Controls.Add (TReAr[(TabN, TaskN)]); TReAr[(TabN, TaskN)].BringToFront(); }
-			if (CurTask.Expire != null) { TabGRAr[TabN].Controls.Add (TExAr[(TabN, TaskN)]); TExAr[(TabN, TaskN)].BringToFront(); TExAr[(TabN, TaskN)].Location=new Point(GBAr[(TabN, TaskN)].Location.X + GBAr[(TabN, TaskN)].Width-TExAr[(TabN, TaskN)].Width-5,GBAr[(TabN, TaskN)].Location.Y+GBAr[(TabN, TaskN)].Height-8); }
-			ToolTip.SetToolTip(TDDSAr[(TabN, TaskN)], (CurTask.DDS != ""? CurTask.DDS: "This task have no description"));
+			GBAr[(TabN, TaskN)].Controls.Add(TDDSAr[(TabN, TaskN)]);
+			if (CurTask.Days>0) { TabGRAr[TabN].Controls.Add(TReAr[(TabN, TaskN)]); TReAr[(TabN, TaskN)].BringToFront(); }
+			if (CurTask.Expire!=null) { TabGRAr[TabN].Controls.Add(TExAr[(TabN, TaskN)]); TExAr[(TabN, TaskN)].BringToFront(); TExAr[(TabN, TaskN)].Location=new Point(GBAr[(TabN, TaskN)].Location.X+GBAr[(TabN, TaskN)].Width-TExAr[(TabN, TaskN)].Width-5, GBAr[(TabN, TaskN)].Location.Y+GBAr[(TabN, TaskN)].Height-8); }
+			ToolTip.SetToolTip(TDDSAr[(TabN, TaskN)], (CurTask.DDS!="" ? CurTask.DDS : "This task have no description"));
 			TabGRAr[TabN].Controls.Add(GBAr[(TabN, TaskN)]);
 
 			// i could later work on making groub boxes free in the page, where you can change their position or have more than one groub box in the row
 			ControlResizer.Init(GBAr[(TabN, TaskN)], 2, TaskTabR.FrameResize);
 			TDDSAr[(TabN, TaskN)].BringToFront(); TDDSAr[(TabN, TaskN)].MouseDown+=TaskEdit;
 		}
-		
-		public void NukeTasksGUI () {
+
+		public void NukeTasksGUI() {
 			TaskCheckTimeAr.Clear();
 			foreach (KeyValuePair<(int, int), GroupBox> GB in GBAr) { DeleteTaskGUI(GB.Key.Item1, GB.Key.Item2); }
 		}
 
-		public void DeleteTaskGUI (int TabN, int TaskN) {
+		public void DeleteTaskGUI(int TabN, int TaskN) {
 			if (!GBAr.ContainsKey((TabN, TaskN))) { System.Diagnostics.Debug.WriteLine("The given TabNumber or TaskNumber doesn't exists!"); return; }
 			FPAr[(TabN, TaskN)].Controls.Clear(); FPAr[(TabN, TaskN)].Dispose();
 			GBAr[(TabN, TaskN)].Controls.Clear(); GBAr[(TabN, TaskN)].Dispose();
@@ -365,7 +402,24 @@ namespace Timer2 {
 			ChAr.Remove((TabN, TaskN)); CBuAr.Remove((TabN, TaskN)); CLAr.Remove((TabN, TaskN));
 			TNAr.Remove((TabN, TaskN)); TSBuAr.Remove((TabN, TaskN)); TPBuAr.Remove((TabN, TaskN)); TPBAr.Remove((TabN, TaskN)); TLAr.Remove((TabN, TaskN));
 			TaskCheckTimeAr.Remove((TabN, TaskN));
+			if (TReAr.ContainsKey((TabN, TaskN))) TReAr.Remove((TabN, TaskN));
+			if (TExAr.ContainsKey((TabN, TaskN))) TExAr.Remove((TabN, TaskN));
 			System.Diagnostics.Debug.WriteLine("Task GUI Deleted: Tab= "+TabN+" Task= "+TaskN);
+		}
+
+		public void ResetTaskGUI(int TabN, int TaskN) {
+			if (!GBAr.ContainsKey((TabN, TaskN))) { System.Diagnostics.Debug.WriteLine("The given TabNumber or TaskNumber doesn't exists!"); return; }
+			TPTask CurTask = CurTProgra.TaskTabRAr[TabN][TaskN];
+			for (int i = 0; i<CurTask.CheckData.Count; i++) { ChAr[(TabN, TaskN)][i].Checked=false; }
+
+			for (int i = 0; i<CurTask.CountersName.Count; i++) { int k = 0; CBuAr[(TabN, TaskN)][i].Text="0\\"+TK.Token(CurTask.CountersName[i], ref k, '_'); CBuAr[(TabN, TaskN)][i].BackColor=SystemColors.ControlDark; CBuAr[(TabN, TaskN)][i].ForeColor=Color.Black; }
+			for (int i = 0; i<CurTask.TimersName.Count; i++) {
+				CurTask.TimersValue[i]=(CurTask.TimersType[i] ? CurTask.DefaultTimersValue[i] : 0);
+				TPBAr[(TabN, TaskN)][i].Value=(CurTask.TimersType[i] ? 100 : 0);
+				TLAr[(TabN, TaskN)][i].Text=TimeSpan.FromMilliseconds(CurTask.TimersValue[i]).ToString(@"hh\:mm\:ss");
+				CurTask.TimersRunning[i]=false; CurTask.TimersDone[i]=false;
+				TPBuAr[(TabN, TaskN)][i].BackColor=SystemColors.ControlDark; TPBuAr[(TabN, TaskN)][i].Text="\u25B6"; TLAr[(TabN, TaskN)][i].ForeColor=Color.Black;
+			}
 		}
 
 		#endregion
@@ -391,13 +445,13 @@ namespace Timer2 {
 						if ((TK.TimersType[i]&&TK.TimersValue[i]<=0)||(!TK.TimersType[i]&&TK.TimersValue[i]>=TK.DefaultTimersValue[i])) {
 							TK.TimersDone[i]=true; TK.TimersRunning[i]=false; TPBuAr[(TTTabN, TTTaskN)][i].BackColor=Color.Green; TPBuAr[(TTTabN, TTTaskN)][i].Text="\u25B6";
 							ToolTip.SetToolTip(TPBAr[(TTTabN, TTTaskN)][i], "Done!"); TLAr[(TTTabN, TTTaskN)][i].ForeColor=Color.Green;
-						
+
 							// either play a beep or a wave file
-							if (TK.TimersWavPath[i] !="") {
-								if (TK.TimersWavPath[i] =="Beep") System.Media.SystemSounds.Beep.Play();
+							if (TK.TimersWavPath[i]!="") {
+								if (TK.TimersWavPath[i]=="Beep") System.Media.SystemSounds.Beep.Play();
 								else if (File.Exists(TK.TimersWavPath[i])) PlayWavFile(TK.TimersWavPath[i]);
-							}  
-							
+							}
+
 						}
 					}
 					TTTaskN++;
@@ -408,13 +462,13 @@ namespace Timer2 {
 			TTTabN=TTTaskN=0;
 
 			FirePerMin--; //System.Diagnostics.Debug.WriteLine("FirePerMin: "+FirePerMin);
-			if (FirePerMin<=0) { 
-				FirePerMin=600; 
+			if (FirePerMin<=0) {
+				FirePerMin=600;
 				System.Diagnostics.Debug.WriteLine("Expire time check!");
-				foreach ( KeyValuePair <(int, int), bool> CD in TaskCheckTimeAr ) {
-					if (CD.Value!=true) continue; 
-					if (CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].Days > 0) {
-						if (DateTime.Now > CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].ExpectedNextReset) {
+				foreach (KeyValuePair<(int, int), bool> CD in TaskCheckTimeAr) {
+					if (CD.Value!=true) continue;
+					if (CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].Days>0) {
+						if (DateTime.Now>CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].ExpectedNextReset) {
 							System.Diagnostics.Debug.WriteLine("Reset Time !!! Ding Ding Ding!!!!");
 							System.Diagnostics.Debug.WriteLine("Reset Time !!! Ding Ding Ding!!!!");
 							System.Diagnostics.Debug.WriteLine("Reset Time !!! Ding Ding Ding!!!!");
@@ -423,7 +477,7 @@ namespace Timer2 {
 						}
 					}
 
-					if (CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].Expire != null) {
+					if (CurTProgra.TaskTabRAr[CD.Key.Item1].TaskAr[CD.Key.Item2].Expire!=null) {
 
 					}
 				}
@@ -432,11 +486,12 @@ namespace Timer2 {
 
 		private void PlayWavFile(string path) {
 			AlarmPlayer.Stop();
-			AlarmPlayer.SoundLocation=path; 
+			AlarmPlayer.SoundLocation=path;
 			AlarmPlayer.Play(); // PlaySync() blocks, PlayLooping() loops
 		}
 
 		private void StopWav() { AlarmPlayer.Stop(); }
 
-		}
+		
+	}
 }

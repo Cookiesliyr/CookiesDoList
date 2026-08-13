@@ -51,6 +51,9 @@
 			CounterList=new ListBox();
 			tabPage3=new TabPage();
 			groupBox1=new GroupBox();
+			TimerSS=new NumericUpDown();
+			TimerMM=new NumericUpDown();
+			TimerHH=new NumericUpDown();
 			groupBox4=new GroupBox();
 			TimerWavPath=new Label();
 			TimerWav3=new RadioButton();
@@ -86,16 +89,16 @@
 			TaskExpireDP=new DateTimePicker();
 			label14=new Label();
 			panel3=new Panel();
-			TaskResetDP=new DateTimePicker();
+			TaskResetDay7=new CheckBox();
 			TaskResetDay6=new CheckBox();
 			TaskResetDay5=new CheckBox();
-			TaskResetDay3=new CheckBox();
 			TaskResetDay4=new CheckBox();
+			TaskResetDP=new DateTimePicker();
+			TaskResetDay3=new CheckBox();
 			TaskResetDay2=new CheckBox();
 			TaskResetDay1=new CheckBox();
 			TaskResetRB2=new RadioButton();
 			TaskResetRB1=new RadioButton();
-			TaskResetDay7=new CheckBox();
 			TC.SuspendLayout();
 			tabPage1.SuspendLayout();
 			groupBox3.SuspendLayout();
@@ -104,6 +107,9 @@
 			((System.ComponentModel.ISupportInitialize)CounterToVal).BeginInit();
 			tabPage3.SuspendLayout();
 			groupBox1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)TimerSS).BeginInit();
+			((System.ComponentModel.ISupportInitialize)TimerMM).BeginInit();
+			((System.ComponentModel.ISupportInitialize)TimerHH).BeginInit();
 			groupBox4.SuspendLayout();
 			panel2.SuspendLayout();
 			panel1.SuspendLayout();
@@ -183,7 +189,7 @@
 			// CheckRB2
 			// 
 			CheckRB2.AutoSize=true;
-			CheckRB2.Location=new Point(181, 19);
+			CheckRB2.Location=new Point(92, 17);
 			CheckRB2.Name="CheckRB2";
 			CheckRB2.Size=new Size(58, 19);
 			CheckRB2.TabIndex=20;
@@ -194,7 +200,7 @@
 			// CheckRB1
 			// 
 			CheckRB1.AutoSize=true;
-			CheckRB1.Location=new Point(81, 19);
+			CheckRB1.Location=new Point(156, 17);
 			CheckRB1.Name="CheckRB1";
 			CheckRB1.Size=new Size(61, 19);
 			CheckRB1.TabIndex=19;
@@ -413,6 +419,9 @@
 			// 
 			// groupBox1
 			// 
+			groupBox1.Controls.Add(TimerSS);
+			groupBox1.Controls.Add(TimerMM);
+			groupBox1.Controls.Add(TimerHH);
 			groupBox1.Controls.Add(groupBox4);
 			groupBox1.Controls.Add(TimerValueLabel);
 			groupBox1.Controls.Add(label8);
@@ -429,6 +438,34 @@
 			groupBox1.TabIndex=16;
 			groupBox1.TabStop=false;
 			groupBox1.Text="Timer Setting";
+			// 
+			// TimerSS
+			// 
+			TimerSS.Location=new Point(308, 212);
+			TimerSS.Maximum=new decimal(new int[] { -1, int.MaxValue, 0, 0 });
+			TimerSS.Name="TimerSS";
+			TimerSS.Size=new Size(55, 23);
+			TimerSS.TabIndex=28;
+			TimerSS.Value=new decimal(new int[] { 10, 0, 0, 0 });
+			TimerSS.Leave+=TimerHH_Leave;
+			// 
+			// TimerMM
+			// 
+			TimerMM.Location=new Point(251, 212);
+			TimerMM.Maximum=new decimal(new int[] { -1, int.MaxValue, 0, 0 });
+			TimerMM.Name="TimerMM";
+			TimerMM.Size=new Size(48, 23);
+			TimerMM.TabIndex=27;
+			TimerMM.Leave+=TimerHH_Leave;
+			// 
+			// TimerHH
+			// 
+			TimerHH.Location=new Point(177, 212);
+			TimerHH.Maximum=new decimal(new int[] { -1, int.MaxValue, 0, 0 });
+			TimerHH.Name="TimerHH";
+			TimerHH.Size=new Size(68, 23);
+			TimerHH.TabIndex=26;
+			TimerHH.Leave+=TimerHH_Leave;
 			// 
 			// groupBox4
 			// 
@@ -493,9 +530,9 @@
 			TimerValueLabel.AutoSize=true;
 			TimerValueLabel.Location=new Point(9, 194);
 			TimerValueLabel.Name="TimerValueLabel";
-			TimerValueLabel.Size=new Size(162, 15);
+			TimerValueLabel.Size=new Size(315, 15);
 			TimerValueLabel.TabIndex=24;
-			TimerValueLabel.Text="Timer Start Value (in seconds)";
+			TimerValueLabel.Text="Timer Start Value (in seconds) = HH :               MM :          SS";
 			// 
 			// label8
 			// 
@@ -628,9 +665,10 @@
 			TimerValue.Maximum=new decimal(new int[] { -1, int.MaxValue, 0, 0 });
 			TimerValue.Minimum=new decimal(new int[] { 10, 0, 0, 0 });
 			TimerValue.Name="TimerValue";
-			TimerValue.Size=new Size(181, 23);
+			TimerValue.Size=new Size(162, 23);
 			TimerValue.TabIndex=0;
 			TimerValue.Value=new decimal(new int[] { 10, 0, 0, 0 });
+			TimerValue.ValueChanged+=TimerValue_ValueChanged;
 			// 
 			// TimerDel
 			// 
@@ -792,16 +830,15 @@
 			panel3.Size=new Size(587, 56);
 			panel3.TabIndex=26;
 			// 
-			// TaskResetDP
+			// TaskResetDay7
 			// 
-			TaskResetDP.CustomFormat="hh:mm tt";
-			TaskResetDP.Format=DateTimePickerFormat.Custom;
-			TaskResetDP.Location=new Point(104, 26);
-			TaskResetDP.Name="TaskResetDP";
-			TaskResetDP.ShowUpDown=true;
-			TaskResetDP.Size=new Size(109, 23);
-			TaskResetDP.TabIndex=8;
-			TaskResetDP.Value=new DateTime(2026, 7, 29, 10, 0, 0, 0);
+			TaskResetDay7.AutoSize=true;
+			TaskResetDay7.Location=new Point(513, 7);
+			TaskResetDay7.Name="TaskResetDay7";
+			TaskResetDay7.Size=new Size(72, 19);
+			TaskResetDay7.TabIndex=9;
+			TaskResetDay7.Text="Saturday";
+			TaskResetDay7.UseVisualStyleBackColor=true;
 			// 
 			// TaskResetDay6
 			// 
@@ -823,16 +860,6 @@
 			TaskResetDay5.Text="Thursday";
 			TaskResetDay5.UseVisualStyleBackColor=true;
 			// 
-			// TaskResetDay3
-			// 
-			TaskResetDay3.AutoSize=true;
-			TaskResetDay3.Location=new Point(234, 7);
-			TaskResetDay3.Name="TaskResetDay3";
-			TaskResetDay3.Size=new Size(69, 19);
-			TaskResetDay3.TabIndex=5;
-			TaskResetDay3.Text="Tuesday";
-			TaskResetDay3.UseVisualStyleBackColor=true;
-			// 
 			// TaskResetDay4
 			// 
 			TaskResetDay4.AutoSize=true;
@@ -842,6 +869,27 @@
 			TaskResetDay4.TabIndex=4;
 			TaskResetDay4.Text="Wednesday";
 			TaskResetDay4.UseVisualStyleBackColor=true;
+			// 
+			// TaskResetDP
+			// 
+			TaskResetDP.CustomFormat="hh:mm tt";
+			TaskResetDP.Format=DateTimePickerFormat.Custom;
+			TaskResetDP.Location=new Point(104, 26);
+			TaskResetDP.Name="TaskResetDP";
+			TaskResetDP.ShowUpDown=true;
+			TaskResetDP.Size=new Size(109, 23);
+			TaskResetDP.TabIndex=8;
+			TaskResetDP.Value=new DateTime(2026, 7, 29, 10, 0, 0, 0);
+			// 
+			// TaskResetDay3
+			// 
+			TaskResetDay3.AutoSize=true;
+			TaskResetDay3.Location=new Point(234, 7);
+			TaskResetDay3.Name="TaskResetDay3";
+			TaskResetDay3.Size=new Size(69, 19);
+			TaskResetDay3.TabIndex=5;
+			TaskResetDay3.Text="Tuesday";
+			TaskResetDay3.UseVisualStyleBackColor=true;
 			// 
 			// TaskResetDay2
 			// 
@@ -885,16 +933,6 @@
 			TaskResetRB1.Text="Task Reset on";
 			TaskResetRB1.UseVisualStyleBackColor=true;
 			// 
-			// TaskResetDay7
-			// 
-			TaskResetDay7.AutoSize=true;
-			TaskResetDay7.Location=new Point(513, 7);
-			TaskResetDay7.Name="TaskResetDay7";
-			TaskResetDay7.Size=new Size(72, 19);
-			TaskResetDay7.TabIndex=9;
-			TaskResetDay7.Text="Saturday";
-			TaskResetDay7.UseVisualStyleBackColor=true;
-			// 
 			// CreateNewTask
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
@@ -926,6 +964,9 @@
 			tabPage3.ResumeLayout(false);
 			groupBox1.ResumeLayout(false);
 			groupBox1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)TimerSS).EndInit();
+			((System.ComponentModel.ISupportInitialize)TimerMM).EndInit();
+			((System.ComponentModel.ISupportInitialize)TimerHH).EndInit();
 			groupBox4.ResumeLayout(false);
 			groupBox4.PerformLayout();
 			panel2.ResumeLayout(false);
@@ -1015,5 +1056,8 @@
 		private RadioButton TaskResetRB2;
 		public DateTimePicker TaskResetDP;
 		private CheckBox TaskResetDay7;
+		private NumericUpDown TimerSS;
+		private NumericUpDown TimerMM;
+		private NumericUpDown TimerHH;
 	}
 }

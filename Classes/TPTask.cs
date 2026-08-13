@@ -80,15 +80,14 @@ namespace Timer2 {
 		public Color TaskColor = Color.FromArgb(255, 255, 255);
 
 		// i Could replace the data with classes: Check, Counter and Timer. Structs are immuniable
-		public List <string> CheckData = new List <string>();
+		public List <string> CheckData = new List <string>();	 // [0:1Type]
 		public List <string> CheckDDS = new List <string>();
-		public List <string> CountersName = new List <string>();
+		public List <string> CountersName = new List <string>(); // [0:1Type]Value_Name
 		public List <string> CountersDDS = new List <string>();
 		public List <int> CountersValue = new List <int>();
 		public List <long> TimersValue = new List <long>();
 		public List <long> DefaultTimersValue = new List <long>();
-		//public List <int> TimeType = new List <int>(); // Time up\down, Progressbar up\down
-		public List <string> TimersName = new List <string>(); // i could integrate the type in the name
+		public List <string> TimersName = new List <string>(); // 0:1 Digit\Progressbar 0:2 Down\Up
 		public List <string> TimersDDS = new List <string>();
 		public List <string> TimersWavPath = new List <string>();
 
@@ -152,10 +151,10 @@ namespace Timer2 {
 			StringBuilder SB = new StringBuilder();
 			SB.Append((NewID=="" ? ID : NewID)+"\u0FF0"+DDS+"\u0FF0"+Days+"\u0FF0"+ResetTime.Item1+","+ResetTime.Item2+"\u0FF0"+(Expire.HasValue ? Expire.Value.ToString() : "-1")+"\u0FF0"+GH+"\u0FF0"+TaskColor.ToArgb().ToString()+"\u0FF0"  );
 
-			foreach (string CD in CheckData)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
-			foreach (string CD in CheckDDS)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (string CD in CheckData)     SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (string CD in CheckDDS)      SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 			foreach (string CD in CountersName)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
-			foreach (string CD in CountersDDS)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
+			foreach (string CD in CountersDDS)   SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 
 			foreach (int CD in CountersValue) SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
 			foreach (long CD in TimersValue)  SB.Append(CD+"\u0FF0"); SB.Append("\u0FF1");
@@ -170,59 +169,21 @@ namespace Timer2 {
 
 		public TPTask Clone(string NewID = "") { return new TPTask(Save(NewID)); }
 
-		public void GetNextResetTime() {
-			if (Days==0) { ExpectedNextReset =  null; }
-			DateTime CheckedDay = LastCheckedTime;
-			for (int i = 0; i < 7; i++) {
-				CheckedDay = LastCheckedTime.Date.AddDays(i);
-				if ((Days & (1 << (int)CheckedDay.DayOfWeek)) != 0) break;
+		public void GetNextResetTime(DateTime? TestDT = null) {
+			if (Days==0) { ExpectedNextReset = null; return; }
+			DateTime CheckedDay = TestDT??DateTime.Now;
+			for (int i = 0; i < 15; i++) {		
+				System.Diagnostics.Debug.WriteLine("Days [" + i + "] Check: " + CheckedDay.DayOfWeek+" "+(Days&(1<<(int)CheckedDay.DayOfWeek)));
+				if ((Days & (1 << (int)CheckedDay.DayOfWeek)) == 0) {CheckedDay = CheckedDay.Date.AddDays(1); continue; }
+				DateTime? NextReset = new DateTime(CheckedDay.Year, CheckedDay.Month, CheckedDay.Day, ResetTime.Item1, ResetTime.Item2, 0);
+				if (NextReset<CheckedDay) { CheckedDay = CheckedDay.Date.AddDays(1); continue; } // if the day of reset is correct but not the time is right yet
+				LastCheckedTime=ExpectedNextReset??DateTime.Now; ExpectedNextReset = NextReset;
+				System.Diagnostics.Debug.WriteLine("Last Check Date: " + LastCheckedTime + " Next Expected reset date: " + ExpectedNextReset); return;
 			}
+			System.Diagnostics.Debug.WriteLine("No days has been found, this shouldn' happen! did the world ends?");
 
-			DateTime? NextReset = new DateTime(CheckedDay.Year, CheckedDay.Month, CheckedDay.Day, ResetTime.Item1, ResetTime.Item2, 0);
-			if (NextReset <= LastCheckedTime) { ExpectedNextReset = NextReset; return; }
-			for (int i = 7; i < 14; i++) {
-				CheckedDay = LastCheckedTime.Date.AddDays(i);
-				if ((Days & (1 << (int)CheckedDay.DayOfWeek)) != 0) break;
-			}
-
-			ExpectedNextReset = NextReset;
 		}
-		// public void SaveToFile (string Location = "") {}
+
 	}
-
-	/*
-	public class TPTDaily: TPTask {
-		byte ResetTime = 0; // like in hours, should i add a minute like 3:30 am?
-		public TPTDaily() : base() {
-
-		}
-
-		public TPTDaily(string TaskData) : base(TaskData) {
-
-		}
-	}
-
-	public class TPTWeekly: TPTask {
-		byte ResetTime = 0; // like in hours, should i add a minute like 3:30 am?
-		public TPTWeekly() : base() {
-
-		}
-
-		public TPTWeekly(string TaskData) : base(TaskData) {
-
-		}
-	}
-
-	public class TPTToDo: TPTask {
-		byte ResetTime = 0; // like in hours, should i add a minute like 3:30 am?
-		public TPTToDo() : base() {
-
-		}
-
-		public TPTToDo(string TaskData) : base(TaskData) {
-
-		}
-	} 
-	*/
 
 }

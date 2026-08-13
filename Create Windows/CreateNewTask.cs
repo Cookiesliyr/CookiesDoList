@@ -24,8 +24,8 @@ namespace Timer2 {
 			TaskName.BackColor=Color.White; TaskResetRB2.Checked=true;
 			CheckRB1.Checked=TimerRB1.Checked=TimerRB3.Checked=true;
 			TaskResetDay1.Checked=TaskResetDay2.Checked=TaskResetDay3.Checked=TaskResetDay4.Checked=TaskResetDay5.Checked=TaskResetDay6.Checked=TaskResetDay7.Checked=false;
-			TaskResetDP.Value =new DateTime(DateTime.Today.Add(new TimeSpan(10,0,0)).Ticks);
-			TaskExpireDP.Checked=false; TaskExpireDP.Value = DateTime.Today;
+			TaskResetDP.Value=new DateTime(DateTime.Today.Add(new TimeSpan(10, 0, 0)).Ticks);
+			TaskExpireDP.Checked=false; TaskExpireDP.Value=DateTime.Today;
 
 			TaskName.Text=TaskDDS.Text=CheckText.Text=CheckDDS.Text=CounterName.Text=CounterDDS.Text=TimerName.Text=TimerDDS.Text="";
 			if (newTask) STask=new TPTask();
@@ -34,15 +34,15 @@ namespace Timer2 {
 		public void EditTask(TPTask TargetTask) {
 			Clear(); STask=TargetTask.Clone(); TaskOk.Text="Edit";
 			TaskResetDay1.Checked=(STask.Days&1)==1; TaskResetDay2.Checked=(STask.Days&2)==2; TaskResetDay3.Checked=(STask.Days&4)==4; TaskResetDay4.Checked=(STask.Days&8)==8; TaskResetDay5.Checked=(STask.Days&16)==16; TaskResetDay6.Checked=(STask.Days&32)==32; TaskResetDay7.Checked=(STask.Days&64)==64;
-			TaskResetDP.Value = new DateTime(DateTime.Today.Add(new TimeSpan(STask.ResetTime.Item1,STask.ResetTime.Item2, 0)).Ticks);
+			TaskResetDP.Value=new DateTime(DateTime.Today.Add(new TimeSpan(STask.ResetTime.Item1, STask.ResetTime.Item2, 0)).Ticks);
 			TaskResetRB1.Checked=(STask.Days>=0);
 
 			TaskName.Text=STask.ID; TaskDDS.Text=STask.DDS; TaskName.BackColor=STask.TaskColor;
-			TaskExpireDP.Checked = STask.Expire.HasValue; if (STask.Expire.HasValue) TaskExpireDP.Value=STask.Expire.Value;
+			TaskExpireDP.Checked=STask.Expire.HasValue; if (STask.Expire.HasValue) TaskExpireDP.Value=STask.Expire.Value;
 
-			foreach (string C in STask.CheckData)    { CheckList.Items.Add(C.Substring(1)); }
+			foreach (string C in STask.CheckData) { CheckList.Items.Add(C.Substring(1)); }
 			foreach (string C in STask.CountersName) { CounterList.Items.Add(C.Substring(C.IndexOf('_')+1)); }
-			foreach (string C in STask.TimersName)   { TimerList.Items.Add(C.Substring(2)); }
+			foreach (string C in STask.TimersName) { TimerList.Items.Add(C.Substring(2)); }
 
 		}
 
@@ -50,9 +50,9 @@ namespace Timer2 {
 		private void TaskOk_Click(object sender, EventArgs e) {
 			if (TaskName.Text=="") { TaskName.BackColor=Color.Red; return; }
 			STask.DDS=TaskDDS.Text;
-			STask.Days = (TaskResetRB1.Checked ? (byte) ((TaskResetDay1.Checked? 1 : 0) + (TaskResetDay2.Checked ? 2 : 0) + (TaskResetDay3.Checked ? 4 : 0) + (TaskResetDay4.Checked ? 8 : 0) + (TaskResetDay5.Checked ? 16 : 0) + (TaskResetDay6.Checked ? 32 : 0) + (TaskResetDay7.Checked ? 64 : 0)) : (byte)0 );
-			STask.ResetTime = (TaskResetDP.Value.Hour, TaskResetDP.Value.Minute);
-			STask.Expire = (TaskExpireDP.Checked ? (DateTime?)TaskExpireDP.Value : null);
+			STask.Days=(TaskResetRB1.Checked ? (byte)((TaskResetDay1.Checked ? 1 : 0)+(TaskResetDay2.Checked ? 2 : 0)+(TaskResetDay3.Checked ? 4 : 0)+(TaskResetDay4.Checked ? 8 : 0)+(TaskResetDay5.Checked ? 16 : 0)+(TaskResetDay6.Checked ? 32 : 0)+(TaskResetDay7.Checked ? 64 : 0)) : (byte)0);
+			STask.ResetTime=(TaskResetDP.Value.Hour, TaskResetDP.Value.Minute);
+			STask.Expire=(TaskExpireDP.Checked ? (DateTime?)TaskExpireDP.Value : null);
 
 			if (TaskOk.Text=="OK") {
 				Timer2.CurTProgra.TaskTabRAr[CurTaskBar].TaskAr.Add(STask.Clone(TaskName.Text));
@@ -82,15 +82,15 @@ namespace Timer2 {
 		#region Check region
 		private void CheckList_SelectedIndexChanged(object sender, EventArgs e) {
 			if (CheckList.SelectedIndex<0) return;
-			char R = STask.CheckData[CheckList.SelectedIndex][0];
+			char R = STask.CheckData[CheckList.SelectedIndex][1];
 			if (R=='0') CheckRB1.Checked=true; else CheckRB2.Checked=true;
-			CheckText.Text=STask.CheckData[CheckList.SelectedIndex].Substring(1);
+			CheckText.Text=STask.CheckData[CheckList.SelectedIndex].Substring(2);
 			CheckDDS.Text=STask.CheckDDS[CheckList.SelectedIndex];
 		}
 
 		private void CheckAdd_Click(object sender, EventArgs e) {
 			if (CheckText.Text=="") { CheckText.BackColor=Color.Red; return; }
-			STask.CheckData.Add((CheckRB1.Checked ? "0" : "1")+CheckText.Text);
+			STask.CheckData.Add("0"+(CheckRB1.Checked ? "0" : "1")+CheckText.Text);
 			STask.CheckDDS.Add(CheckDDS.Text);
 			CheckList.Items.Add(CheckText.Text);
 
@@ -99,7 +99,7 @@ namespace Timer2 {
 
 		private void CheckSave_Click(object sender, EventArgs e) {
 			if (CheckList.SelectedIndex<0) return;
-			STask.CheckData[CheckList.SelectedIndex]=(CheckRB1.Checked ? "0" : "1")+CheckText.Text;
+			STask.CheckData[CheckList.SelectedIndex]="0"+(CheckRB1.Checked ? "0" : "1")+CheckText.Text;
 			STask.CheckDDS[CheckList.SelectedIndex]=CheckDDS.Text;
 			CheckReinitalize();
 		}
@@ -215,11 +215,26 @@ namespace Timer2 {
 
 		private void TimerReinitalize() {
 			TimerList.SelectedIndex=-1; TimerName.Text=TimerDDS.Text=""; TimerRB1.Checked=TimerRB3.Checked=true; TimerName.BackColor=Color.White;
+			TimerValue.Value=10;
 		}
 
 		private void TimerValLabelUpdate() {
 			TimerValueLabel.Text=(TimerRB3.Checked ? "Timer Start Value (in seconds)" : "Timer Cap Value (in seconds)");
 		}
+
+		private void TimerValue_ValueChanged(object sender, EventArgs e) { TimerValueHelper(); }
+
+		private void TimerValueHelper() {
+			TimerHH.Value = (int)(TimerValue.Value/3600);
+			TimerMM.Value = (int)((TimerValue.Value%3600)/60);
+			TimerSS.Value = (int)(TimerValue.Value%60);
+		}
+
+		private void TimerHH_Leave(object sender, EventArgs e) {
+			TimerValue.Value = TimerHH.Value*3600 + TimerMM.Value*60 + TimerSS.Value;
+		}
 		#endregion
+
+		
 	}
 }

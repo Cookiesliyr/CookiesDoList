@@ -28,12 +28,17 @@
 		/// </summary>
 		private void InitializeComponent() {
 			components=new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Timer2));
 			menuStrip1=new MenuStrip();
 			SMFile=new ToolStripMenuItem();
 			SMCreate=new ToolStripMenuItem();
+			toolStripSeparator2=new ToolStripSeparator();
 			SMSave=new ToolStripMenuItem();
+			SMASave=new ToolStripMenuItem();
 			SMLoad=new ToolStripMenuItem();
 			SMAuto=new ToolStripMenuItem();
+			toolStripSeparator1=new ToolStripSeparator();
+			exitToolStripMenuItem=new ToolStripMenuItem();
 			SMEdit=new ToolStripMenuItem();
 			SMReport=new ToolStripMenuItem();
 			EditMTabs=new Button();
@@ -42,12 +47,14 @@
 			TCTab2=new TabPage();
 			TCTab3=new TabPage();
 			TCTab4=new TabPage();
+			ResetTester=new DateTimePicker();
 			NewTaskButt=new Button();
 			ToolTip=new ToolTip(components);
 			Timer1=new System.Windows.Forms.Timer(components);
 			SFD=new SaveFileDialog();
 			LFD=new OpenFileDialog();
 			ColorD=new ColorDialog();
+			TimerNotifyIcon=new NotifyIcon(components);
 			menuStrip1.SuspendLayout();
 			TC.SuspendLayout();
 			SuspendLayout();
@@ -57,13 +64,13 @@
 			menuStrip1.Items.AddRange(new ToolStripItem[] { SMFile, SMEdit, SMReport });
 			menuStrip1.Location=new Point(0, 0);
 			menuStrip1.Name="menuStrip1";
-			menuStrip1.Size=new Size(595, 24);
+			menuStrip1.Size=new Size(600, 24);
 			menuStrip1.TabIndex=0;
 			menuStrip1.Text="menuStrip1";
 			// 
 			// SMFile
 			// 
-			SMFile.DropDownItems.AddRange(new ToolStripItem[] { SMCreate, SMSave, SMLoad, SMAuto });
+			SMFile.DropDownItems.AddRange(new ToolStripItem[] { SMCreate, toolStripSeparator2, SMSave, SMASave, SMLoad, SMAuto, toolStripSeparator1, exitToolStripMenuItem });
 			SMFile.Name="SMFile";
 			SMFile.Size=new Size(37, 20);
 			SMFile.Text="File";
@@ -75,12 +82,25 @@
 			SMCreate.Text="Create New Program";
 			SMCreate.Click+=SMCreate_Click;
 			// 
+			// toolStripSeparator2
+			// 
+			toolStripSeparator2.Name="toolStripSeparator2";
+			toolStripSeparator2.Size=new Size(181, 6);
+			// 
 			// SMSave
 			// 
+			SMSave.Enabled=false;
 			SMSave.Name="SMSave";
 			SMSave.Size=new Size(184, 22);
 			SMSave.Text="Save Program";
 			SMSave.Click+=SMSave_Click;
+			// 
+			// SMASave
+			// 
+			SMASave.Name="SMASave";
+			SMASave.Size=new Size(184, 22);
+			SMASave.Text="Save As Program";
+			SMASave.Click+=SMASave_Click;
 			// 
 			// SMLoad
 			// 
@@ -95,6 +115,18 @@
 			SMAuto.Size=new Size(184, 22);
 			SMAuto.Text="Set default program";
 			SMAuto.Click+=SMAuto_Click;
+			// 
+			// toolStripSeparator1
+			// 
+			toolStripSeparator1.Name="toolStripSeparator1";
+			toolStripSeparator1.Size=new Size(181, 6);
+			// 
+			// exitToolStripMenuItem
+			// 
+			exitToolStripMenuItem.Name="exitToolStripMenuItem";
+			exitToolStripMenuItem.Size=new Size(184, 22);
+			exitToolStripMenuItem.Text="Exit";
+			exitToolStripMenuItem.Click+=exitToolStripMenuItem_Click;
 			// 
 			// SMEdit
 			// 
@@ -169,6 +201,15 @@
 			TCTab4.Text="ToDo";
 			TCTab4.UseVisualStyleBackColor=true;
 			// 
+			// ResetTester
+			// 
+			ResetTester.CustomFormat="MM/dd/yyyy hh:mm tt";
+			ResetTester.Format=DateTimePickerFormat.Custom;
+			ResetTester.Location=new Point(345, 25);
+			ResetTester.Name="ResetTester";
+			ResetTester.Size=new Size(200, 23);
+			ResetTester.TabIndex=0;
+			// 
 			// NewTaskButt
 			// 
 			NewTaskButt.Font=new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
@@ -193,19 +234,29 @@
 			// 
 			LFD.Filter="Task save file(*.tsk)|*.tsk";
 			// 
+			// TimerNotifyIcon
+			// 
+			TimerNotifyIcon.BalloonTipIcon=ToolTipIcon.Info;
+			TimerNotifyIcon.Icon=(Icon)resources.GetObject("TimerNotifyIcon.Icon");
+			TimerNotifyIcon.Text="notifyIcon1";
+			TimerNotifyIcon.Visible=true;
+			// 
 			// Timer2
 			// 
 			AutoScaleDimensions=new SizeF(7F, 15F);
 			AutoScaleMode=AutoScaleMode.Font;
-			ClientSize=new Size(595, 304);
+			ClientSize=new Size(600, 304);
+			Controls.Add(ResetTester);
 			Controls.Add(NewTaskButt);
 			Controls.Add(EditMTabs);
 			Controls.Add(menuStrip1);
 			Controls.Add(TC);
 			MainMenuStrip=menuStrip1;
 			Name="Timer2";
+			ShowInTaskbar=false;
 			StartPosition=FormStartPosition.CenterScreen;
 			Text="Timer 2";
+			FormClosing+=Timer2_FormClosing;
 			ResizeEnd+=Timer2_ResizeEnd;
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();
@@ -230,11 +281,17 @@
 		public TabControl TC;
 		private ToolTip ToolTip;
 		private System.Windows.Forms.Timer Timer1;
-		private ToolStripMenuItem SMSave;
+		private ToolStripMenuItem SMASave;
 		private SaveFileDialog SFD;
 		private OpenFileDialog LFD;
 		private ToolStripMenuItem SMAuto;
 		public Button NewTaskButt;
 		public ColorDialog ColorD;
+		private DateTimePicker ResetTester;
+		private ToolStripSeparator toolStripSeparator2;
+		private ToolStripMenuItem SMSave;
+		private ToolStripSeparator toolStripSeparator1;
+		private ToolStripMenuItem exitToolStripMenuItem;
+		private NotifyIcon TimerNotifyIcon;
 	}
 }
