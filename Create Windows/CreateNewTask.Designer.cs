@@ -39,6 +39,12 @@
 			CheckList=new ListBox();
 			tabPage2=new TabPage();
 			groupBox2=new GroupBox();
+			label16=new Label();
+			CounterStartVal=new NumericUpDown();
+			panel4=new Panel();
+			label15=new Label();
+			CounterRB2=new RadioButton();
+			CounterRB1=new RadioButton();
 			label12=new Label();
 			CounterToVal=new NumericUpDown();
 			label9=new Label();
@@ -104,6 +110,8 @@
 			groupBox3.SuspendLayout();
 			tabPage2.SuspendLayout();
 			groupBox2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)CounterStartVal).BeginInit();
+			panel4.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)CounterToVal).BeginInit();
 			tabPage3.SuspendLayout();
 			groupBox1.SuspendLayout();
@@ -292,6 +300,9 @@
 			// 
 			// groupBox2
 			// 
+			groupBox2.Controls.Add(label16);
+			groupBox2.Controls.Add(CounterStartVal);
+			groupBox2.Controls.Add(panel4);
 			groupBox2.Controls.Add(label12);
 			groupBox2.Controls.Add(CounterToVal);
 			groupBox2.Controls.Add(label9);
@@ -305,10 +316,68 @@
 			groupBox2.TabStop=false;
 			groupBox2.Text="Counter setting";
 			// 
+			// label16
+			// 
+			label16.AutoSize=true;
+			label16.Location=new Point(141, 157);
+			label16.Name="label16";
+			label16.Size=new Size(62, 15);
+			label16.TabIndex=26;
+			label16.Text="Start Value";
+			// 
+			// CounterStartVal
+			// 
+			CounterStartVal.Location=new Point(141, 176);
+			CounterStartVal.Maximum=new decimal(new int[] { 9001, 0, 0, 0 });
+			CounterStartVal.Name="CounterStartVal";
+			CounterStartVal.Size=new Size(129, 23);
+			CounterStartVal.TabIndex=25;
+			// 
+			// panel4
+			// 
+			panel4.Controls.Add(label15);
+			panel4.Controls.Add(CounterRB2);
+			panel4.Controls.Add(CounterRB1);
+			panel4.Location=new Point(6, 112);
+			panel4.Name="panel4";
+			panel4.Size=new Size(284, 36);
+			panel4.TabIndex=24;
+			// 
+			// label15
+			// 
+			label15.AutoSize=true;
+			label15.Location=new Point(3, 10);
+			label15.Name="label15";
+			label15.Size=new Size(39, 15);
+			label15.TabIndex=1;
+			label15.Text="Shape";
+			// 
+			// CounterRB2
+			// 
+			CounterRB2.AutoSize=true;
+			CounterRB2.Location=new Point(123, 8);
+			CounterRB2.Name="CounterRB2";
+			CounterRB2.Size=new Size(74, 19);
+			CounterRB2.TabIndex=4;
+			CounterRB2.Text="Up Down";
+			CounterRB2.UseVisualStyleBackColor=true;
+			// 
+			// CounterRB1
+			// 
+			CounterRB1.AutoSize=true;
+			CounterRB1.Checked=true;
+			CounterRB1.Location=new Point(56, 8);
+			CounterRB1.Name="CounterRB1";
+			CounterRB1.Size=new Size(61, 19);
+			CounterRB1.TabIndex=3;
+			CounterRB1.TabStop=true;
+			CounterRB1.Text="Button";
+			CounterRB1.UseVisualStyleBackColor=true;
+			// 
 			// label12
 			// 
 			label12.AutoSize=true;
-			label12.Location=new Point(6, 109);
+			label12.Location=new Point(6, 157);
 			label12.Name="label12";
 			label12.Size=new Size(77, 15);
 			label12.TabIndex=23;
@@ -316,10 +385,10 @@
 			// 
 			// CounterToVal
 			// 
-			CounterToVal.Location=new Point(6, 128);
-			CounterToVal.Maximum=new decimal(new int[] { 9001, 0, 0, 0 });
+			CounterToVal.Location=new Point(6, 176);
+			CounterToVal.Maximum=new decimal(new int[] { 90001, 0, 0, 0 });
 			CounterToVal.Name="CounterToVal";
-			CounterToVal.Size=new Size(181, 23);
+			CounterToVal.Size=new Size(129, 23);
 			CounterToVal.TabIndex=22;
 			// 
 			// label9
@@ -960,6 +1029,9 @@
 			tabPage2.ResumeLayout(false);
 			groupBox2.ResumeLayout(false);
 			groupBox2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)CounterStartVal).EndInit();
+			panel4.ResumeLayout(false);
+			panel4.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)CounterToVal).EndInit();
 			tabPage3.ResumeLayout(false);
 			groupBox1.ResumeLayout(false);
@@ -1059,5 +1131,11 @@
 		private NumericUpDown TimerSS;
 		private NumericUpDown TimerMM;
 		private NumericUpDown TimerHH;
+		private Label label16;
+		private NumericUpDown CounterStartVal;
+		private Panel panel4;
+		private Label label15;
+		private RadioButton CounterRB2;
+		private RadioButton CounterRB1;
 	}
 }

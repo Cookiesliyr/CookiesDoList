@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 namespace Timer2 {
 	public class ControlResizer {
         public static Dictionary<Control, byte> CRAr = new Dictionary<Control, byte>();
-        public static Dictionary<Control, Action<Control>> CRActionAr = new Dictionary<Control, Action<Control>>();
-        private static Point _cursorStartPoint;
+        public static Dictionary<Control, Action<Control>> ResizeActionAr = new Dictionary<Control, Action<Control>>();
+        public static Dictionary<Control, Action<Control>> ResizeBeginActionAr = new Dictionary<Control, Action<Control>>();
+        public static Dictionary<Control, Action<Control>> ResizeEndActionAr = new Dictionary<Control, Action<Control>>();
+  
+		private static Point _cursorStartPoint;
         public static bool _resizing;
         private static Size _currentControlStartSize;
         internal static bool MouseIsInLeftEdge { get; set; }
@@ -20,10 +23,13 @@ namespace Timer2 {
 		/// <summary> Make it possible to resize a control by dragging its edges by mouse </summary>
 		/// <param name="control">The Control that you want to be resized</param>
 		/// <param name="sides">Which side you want it to be resizable: Top=1 Bottom=2 Left=4 Right=8</param>
-		/// <param name="CRA">What to do based on the resize direction</param>
-        internal static void Init(Control control, byte sides = 15, Action<Control> CRA = null) {
+		/// <param name="ResizeAction">What to do based on the resize direction</param>
+        internal static void Init(Control control, byte sides = 15, Action<Control> ResizeAction = null, Action<Control> ResizeBeginAction = null, Action<Control> ResizeEndAction = null) {
             if (CRAr.ContainsKey(control)) return;
-            if (CRA != null) CRActionAr.Add(control, CRA);
+            if (ResizeAction != null)	   ResizeActionAr.Add(control, ResizeAction);
+            if (ResizeBeginAction != null) ResizeBeginActionAr.Add(control, ResizeBeginAction);
+            if (ResizeEndAction != null)   ResizeEndActionAr.Add(control, ResizeEndAction);
+
             CRAr.Add(control, sides);
             Init(control, control); 
         }
@@ -63,7 +69,8 @@ namespace Timer2 {
             if (MouseIsInRightEdge || MouseIsInLeftEdge || MouseIsInTopEdge || MouseIsInBottomEdge) {
                 _resizing = true;
                 _currentControlStartSize = control.Size;
-            }
+				if (ResizeBeginActionAr.ContainsKey(control)) ResizeBeginActionAr[control].Invoke(control);
+			}
             _cursorStartPoint = new Point(e.X, e.Y);
             control.Capture = true;
         }
@@ -75,6 +82,8 @@ namespace Timer2 {
 				
             }
             else {
+            if (ResizeActionAr.ContainsKey(control)) 
+					ResizeActionAr[control].Invoke(control);		
                 if (MouseIsInLeftEdge) {
                     if (MouseIsInTopEdge) {
                         control.Width  -= (e.X - _cursorStartPoint.X); control.Left += (e.X - _cursorStartPoint.X); 
@@ -97,7 +106,7 @@ namespace Timer2 {
                     }
                     else control.Width = (e.X - _cursorStartPoint.X)+_currentControlStartSize.Width;
                 }
-                else if (MouseIsInTopEdge) { control.Height -= (e.Y - _cursorStartPoint.Y); control.Top += (e.Y - _cursorStartPoint.Y); }
+                else if (MouseIsInTopEdge)    { control.Height -= (e.Y - _cursorStartPoint.Y); control.Top += (e.Y - _cursorStartPoint.Y); }
                 else if (MouseIsInBottomEdge) control.Height = (e.Y - _cursorStartPoint.Y) + _currentControlStartSize.Height; 
                 else  StopDragOrResizing(control); 
             }
@@ -105,7 +114,7 @@ namespace Timer2 {
         }
 
         private static void StopDragOrResizing(Control control) {
-            if (CRActionAr.ContainsKey(control) && _resizing) CRActionAr[control].Invoke(control);
+            if (ResizeEndActionAr.ContainsKey(control) && _resizing) ResizeEndActionAr[control].Invoke(control);
             _resizing = false;
             control.Capture = false;
             UpdateMouseCursor(control);

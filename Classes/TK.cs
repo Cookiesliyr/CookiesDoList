@@ -51,6 +51,16 @@ namespace Timer2 {
             return ST;
         }
 
+		public static void TokenSkip (string s, ref int i, char c, int SkipTimes) {
+			try {
+				for (int t = 0; t < SkipTimes; t++){
+					while (i < s.Length && !s.Substring(i, 1).Equals(c.ToString())) i += 1;
+					i += 1;
+				}
+			}
+			catch (ArgumentOutOfRangeException) { return; }
+		}
+
 		public static string WordsPass (string s, int wordsN, char c = ' ') {
             StringBuilder ST = new StringBuilder();
             if (wordsN <= 0 || s == "") return s;

@@ -17,27 +17,47 @@ namespace Timer2 {
 
 	public class TaskTabR {
 		
+		public static int STabN = 0, STaskN = 0;
 		public static Action<Control> FrameResize => (GB) => {
-			int k = 0, TabN, TaskN;
-			TK.Token(GB.Name, ref k, '_'); TabN=int.Parse(TK.Token(GB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(GB.Name, ref k, '_'));  
-			Timer2.GBAr[(TabN, TaskN)].Width=Timer2.MainTimer.TC.Width-52;
-			Timer2.CurTProgra.TaskTabRAr[TabN].TaskAr[TaskN].GH=Timer2.GBAr[(TabN, TaskN)].Height;
-			//Timer2.SBAr[(TabN, TaskN)].Location=new Point( Timer2.GBAr[(TabN, TaskN)].Size.Width - 20, 10);
+			if (TaskTabR.STabN<=-1) return;
+			if (Timer2.TReAr.ContainsKey((TaskTabR.STabN, TaskTabR.STaskN))) Timer2.TReAr[(TaskTabR.STabN, TaskTabR.STaskN)].Location=new Point(Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Location.X+12, Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Location.Y+Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Height-8);
+			if (Timer2.TExAr.ContainsKey((TaskTabR.STabN, TaskTabR.STaskN))) Timer2.TExAr[(TaskTabR.STabN, TaskTabR.STaskN)].Location=new Point(Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Location.X+Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Width-Timer2.TExAr[(TaskTabR.STabN, TaskTabR.STaskN)].Width-5, Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Location.Y+Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Height-8);
+		};
+	
+		public static Action<Control> FrameResizeBegin => (GB) => {
+			int k = 0; string GBName = ((GroupBox)GB).Name;
+			TK.Token(GBName, ref k, '_'); STabN=int.Parse(TK.Token(GBName, ref k, '_')); STaskN=int.Parse(TK.Token(GBName, ref k, '_'));  
+		};
+
+		public static Action<Control> FrameResizeEnd => (GB) => {
+			int k = 0; string GBName = ((GroupBox)GB).Name;
+			TK.Token(GBName, ref k, '_'); STabN=int.Parse(TK.Token(GBName, ref k, '_')); STaskN=int.Parse(TK.Token(GBName, ref k, '_'));  
+
+			Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Width=Timer2.MainTimer.TC.Width-52;
+			int MinH = Math.Max(70, Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Height);
+			Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Height=MinH;
+			Timer2.CurTProgra.TaskTabRAr[TaskTabR.STabN].TaskAr[TaskTabR.STaskN].GH=MinH;
+
+			/*Timer2.SBAr[(TabN, TaskN)].Location=new Point( Timer2.GBAr[(TabN, TaskN)].Size.Width - 20, 10);
 			//Timer2.SBAr[(TabN, TaskN)].Height = Timer2.GBAr[(TabN, TaskN)].Size.Height-10;
 
 			// Alright, now i need to find the bottom control in the Gr to find is location, so i can decide what's the scrollbar max
 			//int BottomLoc = Math.Max((Timer2.ChAr[(TabN, TaskN)].LastOrDefault()?.Location.Y)??0, Math.Max((Timer2.CBuAr[(TabN, TaskN)].LastOrDefault()?.Location.Y)??0, (Timer2.TLAr[(TabN, TaskN)].LastOrDefault()?.Location.Y)??0));//Timer2.TLAr[(TabN, TaskN)].Last().Location.Y));
 			//Timer2.SBAr[(TabN, TaskN)].Value=0;
 			//Timer2.SBAr[(TabN, TaskN)].Maximum= Math.Max(10, BottomLoc+25 - Timer2.GBAr[(TabN, TaskN)].Height);
-			//System.Diagnostics.Debug.WriteLine(BottomLoc+20);
+			//System.Diagnostics.Debug.WriteLine(BottomLoc+20);*/
 
-			for (int i = 1; i < Timer2.CurTProgra.TaskTabRAr[TabN].TaskAr.Count; i++) 
-				Timer2.GBAr[(TabN, i)].Location = new Point( 6, Timer2.GBAr[(TabN, i-1)].Location.Y+Timer2.GBAr[(TabN, i-1)].Height + 6);
+			if (Timer2.TReAr.ContainsKey((TaskTabR.STabN, 0))) Timer2.TReAr[(TaskTabR.STabN, 0)].Location=new Point(Timer2.GBAr[(TaskTabR.STabN, 0)].Location.X +	12, Timer2.GBAr[(TaskTabR.STabN, 0)].Location.Y+ Timer2.GBAr[(TaskTabR.STabN, 0)].Height-8);
+			if (Timer2.TExAr.ContainsKey((TaskTabR.STabN, 0))) Timer2.TExAr[(TaskTabR.STabN, 0)].Location=new Point(Timer2.GBAr[(TaskTabR.STabN, 0)].Location.X + Timer2.GBAr[(TaskTabR.STabN, 0)].Width-Timer2.TExAr[(TaskTabR.STabN, 0)].Width-5,Timer2.GBAr[(TaskTabR.STabN, 0)].Location.Y+Timer2.GBAr[(TaskTabR.STabN, 0)].Height-8);
 
-			Timer2.TDDSAr[(TabN, TaskN)].Location=new Point(Timer2.GBAr[(TabN, TaskN)].Width-21, 2);
-			if (Timer2.TReAr.ContainsKey((TabN, TaskN))) Timer2.TReAr[(TabN, TaskN)].Location=new Point(Timer2.GBAr[(TabN, TaskN)].Location.X +	12, Timer2.GBAr[(TabN, TaskN)].Location.Y+ Timer2.GBAr[(TabN, TaskN)].Height-8);
-			if (Timer2.TExAr.ContainsKey((TabN, TaskN))) Timer2.TExAr[(TabN, TaskN)].Location=new Point(Timer2.GBAr[(TabN, TaskN)].Location.X + Timer2.GBAr[(TabN, TaskN)].Width-Timer2.TExAr[(TabN, TaskN)].Width-5,Timer2.GBAr[(TabN, TaskN)].Location.Y+Timer2.GBAr[(TabN, TaskN)].Height-8);
-			Timer2.MainTimer.MoveNTB(TabN);
+			for (int i = 1; i < Timer2.CurTProgra.TaskTabRAr[TaskTabR.STabN].TaskAr.Count; i++) {
+				Timer2.GBAr[(TaskTabR.STabN, i)].Location = new Point( 6, Timer2.GBAr[(TaskTabR.STabN, i-1)].Location.Y+Timer2.GBAr[(TaskTabR.STabN, i-1)].Height + 12);
+				if (Timer2.TReAr.ContainsKey((TaskTabR.STabN, i))) Timer2.TReAr[(TaskTabR.STabN, i)].Location=new Point(Timer2.GBAr[(TaskTabR.STabN, i)].Location.X +	12, Timer2.GBAr[(TaskTabR.STabN, i)].Location.Y+ Timer2.GBAr[(TaskTabR.STabN, i)].Height-8);
+				if (Timer2.TExAr.ContainsKey((TaskTabR.STabN, i))) Timer2.TExAr[(TaskTabR.STabN, i)].Location=new Point(Timer2.GBAr[(TaskTabR.STabN, i)].Location.X + Timer2.GBAr[(TaskTabR.STabN, i)].Width-Timer2.TExAr[(TaskTabR.STabN, i)].Width-5,Timer2.GBAr[(TaskTabR.STabN, i)].Location.Y+Timer2.GBAr[(TaskTabR.STabN, i)].Height-8);
+			}
+			Timer2.TDDSAr[(TaskTabR.STabN, TaskTabR.STaskN)].Location=new Point(Timer2.GBAr[(TaskTabR.STabN, TaskTabR.STaskN)].Width-21, -2);
+			
+			Timer2.MainTimer.MoveNTB(TaskTabR.STabN); TaskTabR.STabN=TaskTabR.STaskN=-1;
 			
 		};
 
@@ -78,11 +98,12 @@ namespace Timer2 {
 		public byte Days; public (int, int) ResetTime; // HH:MM
 		public DateTime? Expire = null, ExpectedNextReset; public DateTime LastCheckedTime = DateTime.Now;
 		public Color TaskColor = Color.FromArgb(255, 255, 255);
+		public bool HasExpired = false;
 
 		// i Could replace the data with classes: Check, Counter and Timer. Structs are immuniable
 		public List <string> CheckData = new List <string>();	 // [0:1Type]
 		public List <string> CheckDDS = new List <string>();
-		public List <string> CountersName = new List <string>(); // [0:1Type]Value_Name
+		public List <string> CountersName = new List <string>(); // [0:1Type Button|UpDown]_DefaultValue_GoalValue_Name
 		public List <string> CountersDDS = new List <string>();
 		public List <int> CountersValue = new List <int>();
 		public List <long> TimersValue = new List <long>();
@@ -169,6 +190,9 @@ namespace Timer2 {
 
 		public TPTask Clone(string NewID = "") { return new TPTask(Save(NewID)); }
 
+		/// <summary> This function register the next date to reset the task, it should be called only when the current time is higher than ExpectedNextReset time cause it doesn't do an inner check for that  </summary>
+		/// <param name="TestDT"> This parameter is used to test the function instead of using the current time</param>
+		// ExpectedNextReset = The time where the task would reset next. LastCheckedTime = Last time that the task got reseted. CheckedDay = the pivot of the day of the week to seek which day would task will be reseted. NextReset = The pivot with the registered task reset time of the day.
 		public void GetNextResetTime(DateTime? TestDT = null) {
 			if (Days==0) { ExpectedNextReset = null; return; }
 			DateTime CheckedDay = TestDT??DateTime.Now;
@@ -176,8 +200,8 @@ namespace Timer2 {
 				System.Diagnostics.Debug.WriteLine("Days [" + i + "] Check: " + CheckedDay.DayOfWeek+" "+(Days&(1<<(int)CheckedDay.DayOfWeek)));
 				if ((Days & (1 << (int)CheckedDay.DayOfWeek)) == 0) {CheckedDay = CheckedDay.Date.AddDays(1); continue; }
 				DateTime? NextReset = new DateTime(CheckedDay.Year, CheckedDay.Month, CheckedDay.Day, ResetTime.Item1, ResetTime.Item2, 0);
-				if (NextReset<CheckedDay) { CheckedDay = CheckedDay.Date.AddDays(1); continue; } // if the day of reset is correct but not the time is right yet
-				LastCheckedTime=ExpectedNextReset??DateTime.Now; ExpectedNextReset = NextReset;
+				if (NextReset<=CheckedDay) { CheckedDay = CheckedDay.Date.AddDays(1); continue; } // if the day of reset is correct but not the time is right yet
+				LastCheckedTime=DateTime.Now; ExpectedNextReset = NextReset; // it was LastCheckedTime=ExpectedNextReset??DateTime.Now;
 				System.Diagnostics.Debug.WriteLine("Last Check Date: " + LastCheckedTime + " Next Expected reset date: " + ExpectedNextReset); return;
 			}
 			System.Diagnostics.Debug.WriteLine("No days has been found, this shouldn' happen! did the world ends?");

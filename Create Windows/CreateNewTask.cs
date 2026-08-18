@@ -40,9 +40,9 @@ namespace Timer2 {
 			TaskName.Text=STask.ID; TaskDDS.Text=STask.DDS; TaskName.BackColor=STask.TaskColor;
 			TaskExpireDP.Checked=STask.Expire.HasValue; if (STask.Expire.HasValue) TaskExpireDP.Value=STask.Expire.Value;
 
-			foreach (string C in STask.CheckData) { CheckList.Items.Add(C.Substring(1)); }
-			foreach (string C in STask.CountersName) { CounterList.Items.Add(C.Substring(C.IndexOf('_')+1)); }
-			foreach (string C in STask.TimersName) { TimerList.Items.Add(C.Substring(2)); }
+			foreach (string C in STask.CheckData)    { CheckList.Items.Add(C.Substring(1)); }
+			foreach (string C in STask.CountersName) { int k = 0; TK.TokenSkip(C, ref k, '_',3); CounterList.Items.Add(TK.Token(C, ref k, '\u0FF0')); }
+			foreach (string C in STask.TimersName)   { TimerList.Items.Add(C.Substring(2)); }
 
 		}
 
@@ -53,7 +53,7 @@ namespace Timer2 {
 			STask.Days=(TaskResetRB1.Checked ? (byte)((TaskResetDay1.Checked ? 1 : 0)+(TaskResetDay2.Checked ? 2 : 0)+(TaskResetDay3.Checked ? 4 : 0)+(TaskResetDay4.Checked ? 8 : 0)+(TaskResetDay5.Checked ? 16 : 0)+(TaskResetDay6.Checked ? 32 : 0)+(TaskResetDay7.Checked ? 64 : 0)) : (byte)0);
 			STask.ResetTime=(TaskResetDP.Value.Hour, TaskResetDP.Value.Minute);
 			STask.Expire=(TaskExpireDP.Checked ? (DateTime?)TaskExpireDP.Value : null);
-
+			Timer2.MainTimer.Timer1.Enabled=false;
 			if (TaskOk.Text=="OK") {
 				Timer2.CurTProgra.TaskTabRAr[CurTaskBar].TaskAr.Add(STask.Clone(TaskName.Text));
 				Timer2.MainTimer.GenerateTaskGUI(CurTaskBar, Timer2.CurTProgra.TaskTabRAr[CurTaskBar].TaskAr.Count-1);
@@ -63,7 +63,7 @@ namespace Timer2 {
 				Timer2.MainTimer.DeleteTaskGUI(CurTaskBar, CurTaskN);
 				Timer2.MainTimer.GenerateTaskGUI(CurTaskBar, CurTaskN);
 			}
-
+			Timer2.MainTimer.Timer1.Enabled=true;
 			Timer2.MainTimer.EnterEditMode();
 			Hide(); Clear(); Timer2.ReturnToTimer();
 		}
@@ -121,23 +121,27 @@ namespace Timer2 {
 		#region Counter region
 		private void CounterList_SelectedIndexChanged(object sender, EventArgs e) {
 			if (CounterList.SelectedIndex<0) return;
-			int k = 0; CounterToVal.Value=int.Parse(TK.Token(STask.CountersName[CounterList.SelectedIndex], ref k, '_'));
+			int k = 0, CounterType = int.Parse(TK.Token(STask.CountersName[CounterList.SelectedIndex], ref k, '_'));
+			if (CounterType==0) CounterRB1.Checked=true; else CounterRB2.Checked=true;
+			CounterStartVal.Value=int.Parse(TK.Token(STask.CountersName[CounterList.SelectedIndex], ref k, '_'));
+			CounterToVal.Value=int.Parse(TK.Token(STask.CountersName[CounterList.SelectedIndex], ref k, '_'));
 			CounterName.Text=TK.Token(STask.CountersName[CounterList.SelectedIndex], ref k, '\r');
 			CounterDDS.Text=STask.CountersDDS[CounterList.SelectedIndex];
+			CounterStartVal.Value = STask.CountersValue[CounterList.SelectedIndex];
 		}
 
 		private void CounterAdd_Click(object sender, EventArgs e) {
 			if (CounterName.Text=="") { CounterName.BackColor=Color.Red; return; }
-			STask.CountersValue.Add(0);
-			STask.CountersName.Add(CounterToVal.Value.ToString()+"_"+CounterName.Text);
+			STask.CountersValue.Add((int)CounterStartVal.Value);
+			STask.CountersName.Add((CounterRB1.Checked ? 0 : 1) + "_" + CounterStartVal.Value + "_" + CounterToVal.Value.ToString()+"_"+CounterName.Text);
 			STask.CountersDDS.Add(CounterDDS.Text);
 			CounterList.Items.Add(CounterName.Text);
 			CounterReinitalize();
 		}
 
 		private void CounterSave_Click(object sender, EventArgs e) {
-			if (CounterList.SelectedIndex<0) return;
-			STask.CountersName[CounterList.SelectedIndex]=CounterToVal.Value.ToString()+"_"+CounterName.Text;
+			if (CounterList.SelectedIndex<0) return;	
+			STask.CountersName[CounterList.SelectedIndex]=(CounterRB1.Checked ? 0 : 1) + "_" + CounterStartVal.Value + "_" + CounterToVal.Value.ToString()+"_"+CounterName.Text;
 			STask.CountersDDS[CounterList.SelectedIndex]=CounterDDS.Text;
 			CounterReinitalize();
 		}

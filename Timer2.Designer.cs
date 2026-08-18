@@ -29,7 +29,7 @@
 		private void InitializeComponent() {
 			components=new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Timer2));
-			menuStrip1=new MenuStrip();
+			MS1=new MenuStrip();
 			SMFile=new ToolStripMenuItem();
 			SMCreate=new ToolStripMenuItem();
 			toolStripSeparator2=new ToolStripSeparator();
@@ -55,18 +55,23 @@
 			LFD=new OpenFileDialog();
 			ColorD=new ColorDialog();
 			TimerNotifyIcon=new NotifyIcon(components);
-			menuStrip1.SuspendLayout();
+			NotifyIconCS=new ContextMenuStrip(components);
+			showToolStripMenuItem=new ToolStripMenuItem();
+			reportToolStripMenuItem1=new ToolStripMenuItem();
+			quitToolStripMenuItem=new ToolStripMenuItem();
+			MS1.SuspendLayout();
 			TC.SuspendLayout();
+			NotifyIconCS.SuspendLayout();
 			SuspendLayout();
 			// 
-			// menuStrip1
+			// MS1
 			// 
-			menuStrip1.Items.AddRange(new ToolStripItem[] { SMFile, SMEdit, SMReport });
-			menuStrip1.Location=new Point(0, 0);
-			menuStrip1.Name="menuStrip1";
-			menuStrip1.Size=new Size(600, 24);
-			menuStrip1.TabIndex=0;
-			menuStrip1.Text="menuStrip1";
+			MS1.Items.AddRange(new ToolStripItem[] { SMFile, SMEdit, SMReport });
+			MS1.Location=new Point(0, 0);
+			MS1.Name="MS1";
+			MS1.Size=new Size(600, 24);
+			MS1.TabIndex=0;
+			MS1.Text="menuStrip1";
 			// 
 			// SMFile
 			// 
@@ -209,6 +214,7 @@
 			ResetTester.Name="ResetTester";
 			ResetTester.Size=new Size(200, 23);
 			ResetTester.TabIndex=0;
+			ResetTester.Visible=false;
 			// 
 			// NewTaskButt
 			// 
@@ -237,9 +243,38 @@
 			// TimerNotifyIcon
 			// 
 			TimerNotifyIcon.BalloonTipIcon=ToolTipIcon.Info;
+			TimerNotifyIcon.ContextMenuStrip=NotifyIconCS;
 			TimerNotifyIcon.Icon=(Icon)resources.GetObject("TimerNotifyIcon.Icon");
 			TimerNotifyIcon.Text="notifyIcon1";
 			TimerNotifyIcon.Visible=true;
+			TimerNotifyIcon.MouseClick+=TimerNotifyIcon_MouseClick;
+			// 
+			// NotifyIconCS
+			// 
+			NotifyIconCS.Items.AddRange(new ToolStripItem[] { showToolStripMenuItem, reportToolStripMenuItem1, quitToolStripMenuItem });
+			NotifyIconCS.Name="NotifyIconCS";
+			NotifyIconCS.Size=new Size(110, 70);
+			// 
+			// showToolStripMenuItem
+			// 
+			showToolStripMenuItem.Name="showToolStripMenuItem";
+			showToolStripMenuItem.Size=new Size(109, 22);
+			showToolStripMenuItem.Text="Show";
+			showToolStripMenuItem.Click+=showToolStripMenuItem_Click;
+			// 
+			// reportToolStripMenuItem1
+			// 
+			reportToolStripMenuItem1.Name="reportToolStripMenuItem1";
+			reportToolStripMenuItem1.Size=new Size(109, 22);
+			reportToolStripMenuItem1.Text="Report";
+			reportToolStripMenuItem1.Click+=reportToolStripMenuItem1_Click;
+			// 
+			// quitToolStripMenuItem
+			// 
+			quitToolStripMenuItem.Name="quitToolStripMenuItem";
+			quitToolStripMenuItem.Size=new Size(109, 22);
+			quitToolStripMenuItem.Text="Quit";
+			quitToolStripMenuItem.Click+=quitToolStripMenuItem_Click;
 			// 
 			// Timer2
 			// 
@@ -249,25 +284,26 @@
 			Controls.Add(ResetTester);
 			Controls.Add(NewTaskButt);
 			Controls.Add(EditMTabs);
-			Controls.Add(menuStrip1);
+			Controls.Add(MS1);
 			Controls.Add(TC);
-			MainMenuStrip=menuStrip1;
+			MainMenuStrip=MS1;
 			Name="Timer2";
 			ShowInTaskbar=false;
 			StartPosition=FormStartPosition.CenterScreen;
 			Text="Timer 2";
 			FormClosing+=Timer2_FormClosing;
 			ResizeEnd+=Timer2_ResizeEnd;
-			menuStrip1.ResumeLayout(false);
-			menuStrip1.PerformLayout();
+			MS1.ResumeLayout(false);
+			MS1.PerformLayout();
 			TC.ResumeLayout(false);
+			NotifyIconCS.ResumeLayout(false);
 			ResumeLayout(false);
 			PerformLayout();
 		}
 
 		#endregion
 
-		private MenuStrip menuStrip1;
+		private MenuStrip MS1;
 		private ToolStripMenuItem SMFile;
 		private ToolStripMenuItem SMCreate;
 		private ToolStripMenuItem SMLoad;
@@ -280,7 +316,6 @@
 		private TabPage TCTab4;
 		public TabControl TC;
 		private ToolTip ToolTip;
-		private System.Windows.Forms.Timer Timer1;
 		private ToolStripMenuItem SMASave;
 		private SaveFileDialog SFD;
 		private OpenFileDialog LFD;
@@ -293,5 +328,10 @@
 		private ToolStripSeparator toolStripSeparator1;
 		private ToolStripMenuItem exitToolStripMenuItem;
 		private NotifyIcon TimerNotifyIcon;
+		private ContextMenuStrip NotifyIconCS;
+		private ToolStripMenuItem showToolStripMenuItem;
+		private ToolStripMenuItem reportToolStripMenuItem1;
+		private ToolStripMenuItem quitToolStripMenuItem;
+		public System.Windows.Forms.Timer Timer1;
 	}
 }
