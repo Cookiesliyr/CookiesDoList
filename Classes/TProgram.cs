@@ -57,8 +57,9 @@ namespace Timer2 {
 			
 			//if (!File.Exists(Location)) { System.Diagnostics.Debug.Write("The file location:"+Location+" Doesn't exists"); return; }
 
-			using (StreamWriter SW = new StreamWriter(Location + "\\" + FileName)) { SW.Write(Save()); }
-			
+			using (StreamWriter SW = new StreamWriter(Location + "\\" + FileName)) { SW.Write(Save()); }	
 		}
+
+		public TProgram Clone() { return new TProgram(Save()); }
 	}
 }

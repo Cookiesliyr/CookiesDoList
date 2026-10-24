@@ -11,14 +11,14 @@ using System.Windows.Forms;
 
 namespace Timer2 {
 	public partial class TaskTabsEditor: Form {
-		TProgram TPR;
+		TProgram TPR, TTPR;
 
 		public TaskTabsEditor() { InitializeComponent(); }
 
 		private void TaskTabsEditor_FormClosing(object sender, FormClosingEventArgs e) { if (e.CloseReason==CloseReason.UserClosing) { e.Cancel=true; Hide(); Timer2.ReturnToTimer(); } else base.OnFormClosing(e); }
 
 		public void TabsINI() {
-			TPR=Timer2.CurTProgra;
+			TPR=Timer2.CurTProgra; TTPR=TPR.Clone();
 			TabList.Items.Clear();
 			for (int i = 0; i<TPR.TaskTabRAr.Count; i++) {
 				TabList.Items.Add(TPR.TaskTabRAr[i].ID);
@@ -26,10 +26,15 @@ namespace Timer2 {
 
 		}
 
-		private void TECancel_Click(object sender, EventArgs e) { Hide(); Timer2.ReturnToTimer(); }
+		private void TECancel_Click(object sender, EventArgs e) { 
+			// to make Cancels works i should make a copy of the TProgram and load the copy if Cancel is clicked
+			Timer2.CurTProgra = TTPR.Clone();
+			Timer2.MainTimer.LoadCurProgram();
+			Hide(); Timer2.ReturnToTimer(); 
+		}
 
-		private void TEOK_Click(object sender, EventArgs e) { 
-
+		private void TEOK_Click(object sender, EventArgs e) {
+			TTPR=null;
 			Hide(); Timer2.ReturnToTimer(); 
 		}
 
@@ -51,8 +56,9 @@ namespace Timer2 {
 			TabPage TTP = new TabPage();
 			TTP.Name="TabID.Text"; TTP.Location=new Point(4, 24);TTP.Size=new Size(587, 247); 
 			TTP.Text=TabName.Text; TTP.UseVisualStyleBackColor=true; TTP.TabIndex=TabList.Items.Count;
-
+			Timer2.TabGRAr.Add(new Panel { Location=new Point(3, 3), Size=new Size(Width-35, Height-100), AutoSize=true, AutoScroll=true, Dock=DockStyle.Fill });
 			Timer2.MainTimer.TC.TabPages.Add(TTP);
+			Timer2.MainTimer.TC.TabPages[Timer2.TabGRAr.Count-1].Controls.Add(Timer2.TabGRAr[Timer2.TabGRAr.Count-1]);
 			TabsReinitalize();
 		}
 
@@ -65,8 +71,15 @@ namespace Timer2 {
 
 		private void TabDel_Click(object sender, EventArgs e) {
 			if (TabList.SelectedIndex<=-1) return;
-			//Todo: need to show a warning
+			if (MessageBox.Show("Are you sure you want to delete this Tab and all of its tasks?", "Delete Tab", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No) return;
+			while (TPR.TaskTabRAr[TabList.SelectedIndex].TaskAr.Count > 0){
+				Timer2.MainTimer.DeleteTaskGUI(TabList.SelectedIndex, TPR.TaskTabRAr[TabList.SelectedIndex].TaskAr.Count-1);
+				TPR.TaskTabRAr[TabList.SelectedIndex].TaskAr.RemoveAt(TPR.TaskTabRAr[TabList.SelectedIndex].TaskAr.Count-1);
+			}
+
+			Timer2.TabGRAr.RemoveAt(TabList.SelectedIndex);
 			TPR.TaskTabRAr.RemoveAt(TabList.SelectedIndex);
+			Timer2.MainTimer.TC.TabPages.RemoveAt(TabList.SelectedIndex);
 			TabList.Items.RemoveAt(TabList.SelectedIndex);
 			TabsReinitalize();
 		}

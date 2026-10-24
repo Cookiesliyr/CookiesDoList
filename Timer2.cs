@@ -1,6 +1,7 @@
 ﻿
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Timer2 {
 	public partial class Timer2: Form {
@@ -127,6 +128,17 @@ namespace Timer2 {
 			CB.Text=BVal+" \\ "+BConTo;
 		}
 
+		public void Counter_NUD_ValueChanged(object Sender, EventArgs e) {
+			int k = 0, TabN, TaskN, Bi; NumericUpDown CNUD = (NumericUpDown)Sender;
+			TK.Token(CNUD.Name, ref k, '_'); TabN=int.Parse(TK.Token(CNUD.Name, ref k, '_')); TaskN=int.Parse(TK.Token(CNUD.Name, ref k, '_')); Bi=int.Parse(TK.Token(CNUD.Name, ref k, '_'));
+			CurTProgra.TaskTabRAr[TabN][TaskN].CountersValue[Bi]=(int)CNUD.Value;
+			k=0; TK.TokenSkip(CurTProgra.TaskTabRAr[TabN][TaskN].CountersName[Bi], ref k, '_', 2);
+			string BConTo = TK.Token(CurTProgra.TaskTabRAr[TabN][TaskN].CountersName[Bi], ref k, '_');
+
+
+			if (int.Parse(BConTo)>(int)CNUD.Value) { CNUD.BackColor=Color.LightGray; CNUD.ForeColor=Color.Black; } else { CNUD.BackColor=Color.Green; CNUD.ForeColor=Color.White; }
+		}
+
 		public void Timer_StopButt(object Sender, MouseEventArgs e) {
 			int k = 0, TabN, TaskN, Ti; Button TSB = (Button)Sender;
 			TK.Token(TSB.Name, ref k, '_'); TabN=int.Parse(TK.Token(TSB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(TSB.Name, ref k, '_')); Ti=int.Parse(TK.Token(TSB.Name, ref k, '_'));
@@ -183,7 +195,7 @@ namespace Timer2 {
 		private void reportToolStripMenuItem1_Click(object sender, EventArgs e) { } // to do later
 
 		// later on make both quit buttons uses same event
-		private void quitToolStripMenuItem_Click(object sender, EventArgs e) { CloseFlag=true; Close(); }
+		private void quitToolStripMenuItem_Click(object sender, EventArgs e) { TimerExit(); }
 		#endregion
 
 		private void SMCreate_Click(object sender, EventArgs e) {
@@ -238,8 +250,17 @@ namespace Timer2 {
 			//else base.OnFormClosing(e);
 		}
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e) { CloseFlag=true; Close(); }
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e) { TimerExit(); }
 
+		private void TimerExit() {
+			CloseFlag=true;
+			TimerNotifyIcon.Visible=false; TimerNotifyIcon.Dispose();
+			Close();
+		}
+
+		private void SMReport_Click(object sender, EventArgs e) {
+
+		}
 		#endregion
 
 		#region Edit Region
@@ -276,7 +297,7 @@ namespace Timer2 {
 			}
 		}
 
-		#endregion 
+		#endregion
 
 		private void TC_TabIndexChanged(object sender, EventArgs e) {
 			// todo: need to move NewTaskButt below the last task
@@ -347,20 +368,21 @@ namespace Timer2 {
 
 			// =========== Generate the Counter
 			for (int i = 0; i<CurTask.CountersName.Count; i++) {
-				int k = 0; 
+				int k = 0;
 				int ConType = int.Parse(TK.Token(CurTask.CountersName[i], ref k, '_'));
 				int ConStartVal = int.Parse(TK.Token(CurTask.CountersName[i], ref k, '_'));
 				int ConTo = int.Parse(TK.Token(CurTask.CountersName[i], ref k, '_'));
 				string ConName = TK.Token(CurTask.CountersName[i], ref k, '\r');
 				string ConDDS = CurTask.CountersDDS[i];
 
-				CLAr[(TabN, TaskN)].Add (new Label  { Text=ConName, TextAlign=ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 12, FontStyle.Bold) });
+				CLAr[(TabN, TaskN)].Add(new Label { Text=ConName, TextAlign=ContentAlignment.MiddleCenter, Font=new Font("Segoe UI", 12, FontStyle.Bold) });
 				// Todo: flip the visiblity based on the type
-				CBuAr[(TabN, TaskN)].Add(new Button         { Name=("CB_"+TabN+"_"+TaskN+"_"+i), Text= CurTask.CountersValue[i] + "\\"+ConTo, TextAlign=ContentAlignment.MiddleCenter, BackColor=SystemColors.ControlDark, Visible = (ConType == 0) });
-				CNUDAr[(TabN, TaskN)].Add(new NumericUpDown { Name=("CNUD_"+TabN+"_"+TaskN+"_"+i), Value=CurTask.CountersValue[i], Minimum=0, Maximum=Math.Max(ConStartVal,ConTo), Width = 80, TextAlign= HorizontalAlignment.Center, Visible=(ConType == 1) });
+				CBuAr[(TabN, TaskN)].Add(new Button { Name=("CB_"+TabN+"_"+TaskN+"_"+i), Text=CurTask.CountersValue[i]+"\\"+ConTo, TextAlign=ContentAlignment.MiddleCenter, BackColor=SystemColors.ControlDark, Visible=(ConType==0) });
+				CNUDAr[(TabN, TaskN)].Add(new NumericUpDown { Name=("CNUD_"+TabN+"_"+TaskN+"_"+i), Value=CurTask.CountersValue[i], Minimum=0, Maximum=Math.Max(ConStartVal, ConTo), Width=80, TextAlign=HorizontalAlignment.Center, Visible=(ConType==1) });
 
 				CBuAr[(TabN, TaskN)][i].MouseDown+=Counter_MouseDown;
-				ToolTip.SetToolTip(CBuAr[(TabN, TaskN)][i], "Goal: " + ConTo);
+				CNUDAr[(TabN, TaskN)][i].ValueChanged+=Counter_NUD_ValueChanged;
+				ToolTip.SetToolTip(CBuAr[(TabN, TaskN)][i], "Goal: "+ConTo);
 				TGP.Controls.Add(CLAr[(TabN, TaskN)][i]); TGP.Controls.Add(CBuAr[(TabN, TaskN)][i]); TGP.Controls.Add(CNUDAr[(TabN, TaskN)][i]);
 				if (i==CurTask.CheckData.Count-1) TGP.SetFlowBreak(CBuAr[(TabN, TaskN)][i], true);
 				// todo: Check if a NUD control would break the flow if the button is invisible
@@ -384,7 +406,7 @@ namespace Timer2 {
 				//TGP.SetFlowBreak( (TF1? TLAr[(TabN, TaskN)][i]:TPBAr[(TabN, TaskN)][i]) , true);
 
 				ToolTip.SetToolTip(TSBuAr[(TabN, TaskN)][i], "Reset the time "+(TF2 ? " to " : " of ")+TimeSpan.FromMilliseconds(TDVal).ToString(@"hh\:mm\:ss")); ToolTip.SetToolTip(TPBuAr[(TabN, TaskN)][i], "Play\\Pause the timer");
-				ToolTip.SetToolTip(TPBAr[(TabN, TaskN)][i], TName +": "+TimeSpan.FromMilliseconds(TVal).ToString(@"hh\:mm\:ss")); ToolTip.SetToolTip(TNAr[(TabN, TaskN)][i], TName); ToolTip.SetToolTip(TLAr[(TabN, TaskN)][i], TName);
+				ToolTip.SetToolTip(TPBAr[(TabN, TaskN)][i], TName+": "+TimeSpan.FromMilliseconds(TVal).ToString(@"hh\:mm\:ss")); ToolTip.SetToolTip(TNAr[(TabN, TaskN)][i], TName); ToolTip.SetToolTip(TLAr[(TabN, TaskN)][i], TName);
 
 				// Add events
 				TSBuAr[(TabN, TaskN)][i].MouseDown+=Timer_StopButt; TPBuAr[(TabN, TaskN)][i].MouseDown+=Timer_PlayButt;
@@ -402,7 +424,7 @@ namespace Timer2 {
 
 			// i could later work on making groub boxes free in the page, where you can change their position or have more than one groub box in the row
 			ControlResizer.Init(GBAr[(TabN, TaskN)], 2, TaskTabR.FrameResize, TaskTabR.FrameResizeBegin, TaskTabR.FrameResizeEnd);
-			
+
 			TDDSAr[(TabN, TaskN)].BringToFront(); TDDSAr[(TabN, TaskN)].MouseDown+=TaskEdit;
 			if (CurTProgra.TaskTabRAr[TabN].TaskAr[TaskN].Expire!=null&&DateTime.Now>=CurTProgra.TaskTabRAr[TabN].TaskAr[TaskN].Expire) CheckTaskExpired(TabN, TaskN);
 		}
@@ -423,6 +445,7 @@ namespace Timer2 {
 			TaskCheckTimeAr.Remove((TabN, TaskN));
 			if (TReAr.ContainsKey((TabN, TaskN))) TReAr.Remove((TabN, TaskN));
 			if (TExAr.ContainsKey((TabN, TaskN))) TExAr.Remove((TabN, TaskN));
+
 			System.Diagnostics.Debug.WriteLine("Task GUI Deleted: Tab= "+TabN+" Task= "+TaskN);
 		}
 
@@ -431,12 +454,14 @@ namespace Timer2 {
 			TPTask CurTask = CurTProgra.TaskTabRAr[TabN][TaskN];
 			for (int i = 0; i<CurTask.CheckData.Count; i++) { ChAr[(TabN, TaskN)][i].Checked=false; }
 
-			for (int i = 0; i<CurTask.CountersName.Count; i++) { int k = 0; 
+			for (int i = 0; i<CurTask.CountersName.Count; i++) {
+				int k = 0;
 				int CounterType = int.Parse(TK.Token(CurTask.CountersName[i], ref k, '_'));
 				int CounterStartVal = int.Parse(TK.Token(CurTask.CountersName[i], ref k, '_'));
 				int CounterGoalVal = int.Parse(TK.Token(CurTask.CountersName[i], ref k, '_'));
 				string CounterName = TK.Token(CurTask.CountersName[i], ref k, '\r');
-				CBuAr[(TabN, TaskN)][i].Text=CounterStartVal+"\\"+CounterName; CBuAr[(TabN, TaskN)][i].BackColor=SystemColors.ControlDark; CBuAr[(TabN, TaskN)][i].ForeColor=Color.Black; CNUDAr[(TabN, TaskN)][i].Value=CounterStartVal; }
+				CBuAr[(TabN, TaskN)][i].Text=CounterStartVal+"\\"+CounterName; CBuAr[(TabN, TaskN)][i].BackColor=SystemColors.ControlDark; CBuAr[(TabN, TaskN)][i].ForeColor=Color.Black; CNUDAr[(TabN, TaskN)][i].Value=CounterStartVal;
+			}
 			for (int i = 0; i<CurTask.TimersName.Count; i++) {
 				CurTask.TimersValue[i]=(CurTask.TimersType[i] ? CurTask.DefaultTimersValue[i] : 0);
 				TPBAr[(TabN, TaskN)][i].Value=(CurTask.TimersType[i] ? 100 : 0);

@@ -145,6 +145,7 @@
 			SMReport.Name="SMReport";
 			SMReport.Size=new Size(54, 20);
 			SMReport.Text="Report";
+			SMReport.Click+=SMReport_Click;
 			// 
 			// EditMTabs
 			// 
