@@ -657,11 +657,11 @@
 			// TimerRB4
 			// 
 			TimerRB4.AutoSize=true;
-			TimerRB4.Location=new Point(123, 8);
+			TimerRB4.Location=new Point(60, 8);
 			TimerRB4.Name="TimerRB4";
-			TimerRB4.Size=new Size(40, 19);
+			TimerRB4.Size=new Size(97, 19);
 			TimerRB4.TabIndex=4;
-			TimerRB4.Text="Up";
+			TimerRB4.Text="Down (Timer)";
 			TimerRB4.UseVisualStyleBackColor=true;
 			TimerRB4.Click+=TimerRB4_Click;
 			// 
@@ -669,12 +669,12 @@
 			// 
 			TimerRB3.AutoSize=true;
 			TimerRB3.Checked=true;
-			TimerRB3.Location=new Point(56, 8);
+			TimerRB3.Location=new Point(159, 8);
 			TimerRB3.Name="TimerRB3";
-			TimerRB3.Size=new Size(56, 19);
+			TimerRB3.Size=new Size(112, 19);
 			TimerRB3.TabIndex=3;
 			TimerRB3.TabStop=true;
-			TimerRB3.Text="Down";
+			TimerRB3.Text="Up (Stop Watch)";
 			TimerRB3.UseVisualStyleBackColor=true;
 			TimerRB3.Click+=TimerRB3_Click;
 			// 

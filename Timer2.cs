@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -9,12 +10,12 @@ namespace Timer2 {
 		public static CreateNewProgramFile NewTPFMenu = new CreateNewProgramFile();
 		public static TaskTabsEditor TTEMenu = new TaskTabsEditor();
 		public static CreateNewTask NewTaskMenu = new CreateNewTask();
-
+		public static QuickEdit QMenu = new QuickEdit();
 		public static TProgram CurTProgra; private static string _CurTPrograFilePath = "";
 		public static string CurTPrograFilePath { get { return _CurTPrograFilePath; } set { _CurTPrograFilePath=value; MainTimer.SMSave.Enabled=(_CurTPrograFilePath!=""); } }
 		static System.Media.SoundPlayer AlarmPlayer = new System.Media.SoundPlayer();
 
-		public static bool EditMode = false, TabClearEdit = false; static int FirePerMin = 0;
+		public static bool EditMode = false, QuickEditFlag = false, TabClearEdit = false; static int FirePerMin = 0;
 
 		// ============= GUI
 		public static List<Panel> TabGRAr = new List<Panel>();
@@ -48,6 +49,7 @@ namespace Timer2 {
 		public Timer2() {
 			MainTimer=this;
 			InitializeComponent(); NewTaskButt.Width=TC.Width-52;
+			QMenu.Hide();
 
 			if (File.Exists("Autoload.txt")) {
 				string TPFN;
@@ -106,6 +108,7 @@ namespace Timer2 {
 		}*/
 
 		public void CheckChecked(object sender, EventArgs e) {
+			if (QuickEditFlag) return;
 			CheckBox CB = (CheckBox)sender;
 
 			int k = 0, TabN, TaskN, Ci;
@@ -115,6 +118,7 @@ namespace Timer2 {
 		}
 
 		public void Counter_MouseDown(object Sender, MouseEventArgs e) {
+			if (QuickEditFlag) return;
 			int k = 0, TabN, TaskN, Bi, BVal; Button CB = (Button)Sender;
 			TK.Token(CB.Name, ref k, '_'); TabN=int.Parse(TK.Token(CB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(CB.Name, ref k, '_')); Bi=int.Parse(TK.Token(CB.Name, ref k, '_'));
 			k=0; TK.TokenSkip(CurTProgra.TaskTabRAr[TabN][TaskN].CountersName[Bi], ref k, '_', 2);
@@ -126,6 +130,7 @@ namespace Timer2 {
 
 			if (int.Parse(BConTo)>BVal) { CB.BackColor=Color.LightGray; CB.ForeColor=Color.Black; } else { CB.BackColor=Color.Green; CB.ForeColor=Color.White; }
 			CB.Text=BVal+" \\ "+BConTo;
+
 		}
 
 		public void Counter_NUD_ValueChanged(object Sender, EventArgs e) {
@@ -135,29 +140,30 @@ namespace Timer2 {
 			k=0; TK.TokenSkip(CurTProgra.TaskTabRAr[TabN][TaskN].CountersName[Bi], ref k, '_', 2);
 			string BConTo = TK.Token(CurTProgra.TaskTabRAr[TabN][TaskN].CountersName[Bi], ref k, '_');
 
-
 			if (int.Parse(BConTo)>(int)CNUD.Value) { CNUD.BackColor=Color.LightGray; CNUD.ForeColor=Color.Black; } else { CNUD.BackColor=Color.Green; CNUD.ForeColor=Color.White; }
 		}
 
 		public void Timer_StopButt(object Sender, MouseEventArgs e) {
+			if (QuickEditFlag) return;
 			int k = 0, TabN, TaskN, Ti; Button TSB = (Button)Sender;
 			TK.Token(TSB.Name, ref k, '_'); TabN=int.Parse(TK.Token(TSB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(TSB.Name, ref k, '_')); Ti=int.Parse(TK.Token(TSB.Name, ref k, '_'));
 
 			CurTProgra.TaskTabRAr[TabN][TaskN].TimersValue[Ti]=(CurTProgra.TaskTabRAr[TabN][TaskN].TimersType[Ti] ? CurTProgra.TaskTabRAr[TabN][TaskN].DefaultTimersValue[Ti] : 0);
-			TPBAr[(TTTabN, TTTaskN)][Ti].Value=(CurTProgra.TaskTabRAr[TabN][TaskN].TimersType[Ti] ? 100 : 0);
-			TLAr[(TTTabN, TTTaskN)][Ti].Text=TimeSpan.FromMilliseconds(CurTProgra.TaskTabRAr[TabN][TaskN].TimersValue[Ti]).ToString(@"hh\:mm\:ss");
+			TPBAr[(TabN, TaskN)][Ti].Value=(CurTProgra.TaskTabRAr[TabN][TaskN].TimersType[Ti] ? 100 : 0);
+			TLAr[(TabN, TaskN)][Ti].Text=TimeSpan.FromMilliseconds(CurTProgra.TaskTabRAr[TabN][TaskN].TimersValue[Ti]).ToString(@"hh\:mm\:ss");
 
 			if (e.Button==MouseButtons.Left) {
 				CurTProgra.TaskTabRAr[TabN][TaskN].TimersRunning[Ti]=false;
-				TPBuAr[(TTTabN, TTTaskN)][Ti].Text="\u25B6";
+				TPBuAr[(TabN, TaskN)][Ti].Text="\u25B6";
 			}
 
 			CurTProgra.TaskTabRAr[TabN][TaskN].TimersDone[Ti]=false; StopWav();
-			TPBuAr[(TTTabN, TTTaskN)][Ti].BackColor=SystemColors.Control; TLAr[(TTTabN, TTTaskN)][Ti].ForeColor=Color.Black;
+			TPBuAr[(TabN, TaskN)][Ti].BackColor=SystemColors.Control; TLAr[(TabN, TaskN)][Ti].ForeColor=Color.Black;
 			// TSBuAr for play = 25B6, for pause = 23F8 
 		}
 
 		public void Timer_PlayButt(object Sender, MouseEventArgs e) {
+			if (QuickEditFlag) return;
 			int k = 0, TabN, TaskN, Ti, TVal; Button TSB = (Button)Sender;
 			TK.Token(TSB.Name, ref k, '_'); TabN=int.Parse(TK.Token(TSB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(TSB.Name, ref k, '_')); Ti=int.Parse(TK.Token(TSB.Name, ref k, '_'));
 			if (CurTProgra.TaskTabRAr[TabN][TaskN].TimersDone[Ti]) return;
@@ -184,6 +190,40 @@ namespace Timer2 {
 			}
 		}
 
+		public void QETask(object Sender, MouseEventArgs e) {
+			if (!QuickEditFlag) return;
+			int k = 0, TabN, TaskN; Control TSB = (Control)Sender;
+			TK.Token(TSB.Name, ref k, '_'); TabN=int.Parse(TK.Token(TSB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(TSB.Name, ref k, '_'));
+
+			QMenu.Show(0, TabN, TaskN);
+
+			//QMenu.TabMaster.TabPages[0].Text="Task: "+CurTProgra.TaskTabRAr[TabN][TaskN].ID;
+		}
+
+		public void QETodo(object Sender, MouseEventArgs e) {
+			if (!QuickEditFlag) return;
+			((CheckBox)Sender).AutoCheck=false;
+			int k = 0, TabN, TaskN, ControlN; Control TSB = (Control)Sender;
+			TK.Token(TSB.Name, ref k, '_'); TabN=int.Parse(TK.Token(TSB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(TSB.Name, ref k, '_')); ControlN=int.Parse(TK.Token(TSB.Name, ref k, '_'));
+
+			QMenu.Show(1, TabN, TaskN, ControlN);
+		}
+
+		public void QECounter(object Sender, MouseEventArgs e) {
+			if (!QuickEditFlag) return;
+			int k = 0, TabN, TaskN, ControlN; Control TSB = (Control)Sender;
+			TK.Token(TSB.Name, ref k, '_'); TabN=int.Parse(TK.Token(TSB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(TSB.Name, ref k, '_')); ControlN=int.Parse(TK.Token(TSB.Name, ref k, '_'));
+
+			QMenu.Show(2, TabN, TaskN, ControlN);
+		}
+
+		public void QETimer(object Sender, MouseEventArgs e) {
+			if (!QuickEditFlag) return;
+			int k = 0, TabN, TaskN, ControlN; Control TSB = (Control)Sender;
+			TK.Token(TSB.Name, ref k, '_'); TabN=int.Parse(TK.Token(TSB.Name, ref k, '_')); TaskN=int.Parse(TK.Token(TSB.Name, ref k, '_')); ControlN=int.Parse(TK.Token(TSB.Name, ref k, '_'));
+
+			QMenu.Show(3, TabN, TaskN, ControlN);
+		}
 		#endregion
 
 		#region TProgram Region
@@ -237,7 +277,7 @@ namespace Timer2 {
 
 			for (int i = 0; i<CurTProgra.TaskTabRAr.Count; i++) {
 				TabGRAr.Add(new Panel { Location=new Point(3, 3), Size=new Size(Width-35, Height-100), AutoSize=true, AutoScroll=true, Dock=DockStyle.Fill });
-				TC.TabPages.Add(new TabPage { Name="Tab"+i, Text=CurTProgra.TaskTabRAr[i].ID, BackColor=Color.White });
+				TC.TabPages.Add(new TabPage { Name="Tab"+i, Text=CurTProgra.TaskTabRAr[i].TabName, BackColor=Color.White });
 				TC.TabPages[i].Controls.Add(TabGRAr[i]);
 				for (int j = 0; j<CurTProgra.TaskTabRAr[i].TaskAr.Count; j++) GenerateTaskGUI(i, j);
 			}
@@ -264,9 +304,9 @@ namespace Timer2 {
 		#endregion
 
 		#region Edit Region
-		private void SMEdit_Click(object sender, EventArgs e) {
-			EnterEditMode();
-		}
+		private void Timer2_KeyUp(object sender, KeyEventArgs e) { if (e.KeyCode==Keys.ShiftKey) { QuickEditFlag=false; } }
+		private void Timer2_KeyDown(object sender, KeyEventArgs e) { if (e.KeyCode==Keys.ShiftKey) { QuickEditFlag=true; } }
+		private void SMEdit_Click(object sender, EventArgs e) { EnterEditMode(); }
 
 		// this function will turn Edit Mode on\off
 		public void EnterEditMode() {
@@ -345,12 +385,9 @@ namespace Timer2 {
 
 			// ========= Groupbox setting
 			GBAr[(TabN, TaskN)].Controls.Add(FPAr[(TabN, TaskN)]);
-			//GBAr[(TabN, TaskN)].Controls.Add(SBAr[(TabN, TaskN)]);
-			//SBAr[(TabN, TaskN)].Location=new Point( GBAr[(TabN, TaskN)].Size.Width - 20, 10);
-			//SBAr[(TabN, TaskN)].Height = GBAr[(TabN, TaskN)].Size.Height-10;
-			//SBAr[(TabN, TaskN)].BringToFront();
-
 			FlowLayoutPanel TGP = FPAr[(TabN, TaskN)];
+			GBAr[(TabN, TaskN)].MouseDown+=QETask; FPAr[(TabN, TaskN)].MouseDown+=QETask;
+
 			//SBAr[(TabN, TaskN)].Scroll+=Task_GB_SB_ScrollAction;
 
 			// =========== Generate the Todo
@@ -359,8 +396,9 @@ namespace Timer2 {
 					Name=("Check_"+TabN+"_"+TaskN+"_"+i), Text=CurTask.CheckData[i].Substring(2),
 					Checked=(CurTask.CheckData[i][0]=='1'), AutoSize=true, TextAlign=ContentAlignment.MiddleCenter, FlatStyle=FlatStyle.Popup, BackColor=SystemColors.ControlDark
 				});
+
 				if (CurTask.CheckData[i][1]=='0') { ChAr[(TabN, TaskN)][i].Appearance=Appearance.Button; ChAr[(TabN, TaskN)][i].BackColor=ChAr[(TabN, TaskN)][i].Checked ? Color.Green : Color.LightGray; }
-				ChAr[(TabN, TaskN)][i].CheckedChanged+=CheckChecked;
+				ChAr[(TabN, TaskN)][i].CheckedChanged+=CheckChecked; ChAr[(TabN, TaskN)][i].MouseDown+=QETodo; ChAr[(TabN, TaskN)][i].MouseUp+=(s, e) => { ((CheckBox)s).AutoCheck=true; };
 				ToolTip.SetToolTip(ChAr[(TabN, TaskN)][i], CurTask.CheckDDS[i]);
 				TGP.Controls.Add(ChAr[(TabN, TaskN)][i]);
 				if (i==CurTask.CheckData.Count-1) TGP.SetFlowBreak(ChAr[(TabN, TaskN)][i], true);
@@ -375,14 +413,16 @@ namespace Timer2 {
 				string ConName = TK.Token(CurTask.CountersName[i], ref k, '\r');
 				string ConDDS = CurTask.CountersDDS[i];
 
-				CLAr[(TabN, TaskN)].Add(new Label { Text=ConName, TextAlign=ContentAlignment.MiddleCenter, Font=new Font("Segoe UI", 12, FontStyle.Bold) });
+				CLAr[(TabN, TaskN)].Add(new Label { Name=("CL_"+TabN+"_"+TaskN+"_"+i), Text=ConName, TextAlign=ContentAlignment.MiddleCenter, Font=new Font("Segoe UI", 12, FontStyle.Bold) });
 				// Todo: flip the visiblity based on the type
 				CBuAr[(TabN, TaskN)].Add(new Button { Name=("CB_"+TabN+"_"+TaskN+"_"+i), Text=CurTask.CountersValue[i]+"\\"+ConTo, TextAlign=ContentAlignment.MiddleCenter, BackColor=SystemColors.ControlDark, Visible=(ConType==0) });
 				CNUDAr[(TabN, TaskN)].Add(new NumericUpDown { Name=("CNUD_"+TabN+"_"+TaskN+"_"+i), Value=CurTask.CountersValue[i], Minimum=0, Maximum=Math.Max(ConStartVal, ConTo), Width=80, TextAlign=HorizontalAlignment.Center, Visible=(ConType==1) });
 
-				CBuAr[(TabN, TaskN)][i].MouseDown+=Counter_MouseDown;
-				CNUDAr[(TabN, TaskN)][i].ValueChanged+=Counter_NUD_ValueChanged;
+				CBuAr[(TabN, TaskN)][i].MouseDown+=Counter_MouseDown; CBuAr[(TabN, TaskN)][i].MouseDown+=QECounter;
+				CNUDAr[(TabN, TaskN)][i].ValueChanged+=Counter_NUD_ValueChanged; CNUDAr[(TabN, TaskN)][i].MouseDown+=QECounter;
+				CLAr[(TabN, TaskN)][i].MouseDown+=QECounter;
 				ToolTip.SetToolTip(CBuAr[(TabN, TaskN)][i], "Goal: "+ConTo);
+				ToolTip.SetToolTip(CLAr[(TabN, TaskN)][i], ConName+": "+ConDDS);
 				TGP.Controls.Add(CLAr[(TabN, TaskN)][i]); TGP.Controls.Add(CBuAr[(TabN, TaskN)][i]); TGP.Controls.Add(CNUDAr[(TabN, TaskN)][i]);
 				if (i==CurTask.CheckData.Count-1) TGP.SetFlowBreak(CBuAr[(TabN, TaskN)][i], true);
 				// todo: Check if a NUD control would break the flow if the button is invisible
@@ -398,18 +438,20 @@ namespace Timer2 {
 				TSBuAr[(TabN, TaskN)].Add(new Button { Name=("TSB_"+TabN+"_"+TaskN+"_"+i), Text="\u23F9", Width=30, TextAlign=ContentAlignment.MiddleCenter, BackColor=SystemColors.ControlDark });
 				TPBuAr[(TabN, TaskN)].Add(new Button { Name=("TPB_"+TabN+"_"+TaskN+"_"+i), Text="\u25B6", Width=30, TextAlign=ContentAlignment.MiddleCenter, BackColor=SystemColors.ControlDark });
 
-				TPBAr[(TabN, TaskN)].Add(new ProgressBar { Value=Math.Max(0, Math.Min(100, (int)(TVal/(TDVal*0.01)))), Visible=TF1 });
-				TNAr[(TabN, TaskN)].Add(new Label { Text=TName, Visible=TF1, TextAlign=ContentAlignment.MiddleCenter });
-				TLAr[(TabN, TaskN)].Add(new Label { Text=TimeSpan.FromMilliseconds(TVal).ToString(@"hh\:mm\:ss"), Visible=!TF1, TextAlign=ContentAlignment.MiddleCenter, Font=new Font("Segoe UI", 14, FontStyle.Bold) });
+				TPBAr[(TabN, TaskN)].Add(new ProgressBar { Name=("TPB_"+TabN+"_"+TaskN+"_"+i), Value=Math.Max(0, Math.Min(100, (int)(TVal/(TDVal*0.01)))), Visible=TF1 });
+				TNAr[(TabN, TaskN)].Add(new Label { Name=("TNL_"+TabN+"_"+TaskN+"_"+i), Text=TName, TextAlign=ContentAlignment.MiddleCenter, Visible=TF1 });
+				TLAr[(TabN, TaskN)].Add(new Label { Name=("TLL_"+TabN+"_"+TaskN+"_"+i), Text=TimeSpan.FromMilliseconds(TVal).ToString(@"hh\:mm\:ss"), Visible=!TF1, TextAlign=ContentAlignment.MiddleCenter, Font=new Font("Segoe UI", 14, FontStyle.Bold) });
 				TGP.Controls.Add(TSBuAr[(TabN, TaskN)][i]); TGP.Controls.Add(TPBuAr[(TabN, TaskN)][i]); TGP.Controls.Add(TPBAr[(TabN, TaskN)][i]); TGP.Controls.Add(TLAr[(TabN, TaskN)][i]);
 				// i could add some kind of a tag to add a new line or not
 				//TGP.SetFlowBreak( (TF1? TLAr[(TabN, TaskN)][i]:TPBAr[(TabN, TaskN)][i]) , true);
 
-				ToolTip.SetToolTip(TSBuAr[(TabN, TaskN)][i], "Reset the time "+(TF2 ? " to " : " of ")+TimeSpan.FromMilliseconds(TDVal).ToString(@"hh\:mm\:ss")); ToolTip.SetToolTip(TPBuAr[(TabN, TaskN)][i], "Play\\Pause the timer");
+				ToolTip.SetToolTip(TSBuAr[(TabN, TaskN)][i], "Reset the time "+(TF2 ? " to " : " of ")+TimeSpan.FromMilliseconds(TDVal).ToString(@"hh\:mm\:ss")+" - "+TDDS); ToolTip.SetToolTip(TPBuAr[(TabN, TaskN)][i], "Play\\Pause the timer");
 				ToolTip.SetToolTip(TPBAr[(TabN, TaskN)][i], TName+": "+TimeSpan.FromMilliseconds(TVal).ToString(@"hh\:mm\:ss")); ToolTip.SetToolTip(TNAr[(TabN, TaskN)][i], TName); ToolTip.SetToolTip(TLAr[(TabN, TaskN)][i], TName);
 
 				// Add events
 				TSBuAr[(TabN, TaskN)][i].MouseDown+=Timer_StopButt; TPBuAr[(TabN, TaskN)][i].MouseDown+=Timer_PlayButt;
+				TSBuAr[(TabN, TaskN)][i].MouseDown+=QETimer; TPBuAr[(TabN, TaskN)][i].MouseDown+=QETimer;
+				TPBAr[(TabN, TaskN)][i].MouseDown+=QETimer; TNAr[(TabN, TaskN)][i].MouseDown+=QETimer; TLAr[(TabN, TaskN)][i].MouseDown+=QETimer;
 			}
 
 			// =========== add it to the list to Check reset or expire
@@ -547,6 +589,5 @@ namespace Timer2 {
 
 		private void StopWav() { AlarmPlayer.Stop(); }
 
-		
 	}
 }

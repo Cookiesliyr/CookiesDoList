@@ -64,8 +64,8 @@ namespace Timer2 {
 
 		private void TabSave_Click(object sender, EventArgs e) {
 			if (TabList.SelectedIndex<=-1) return;
-			TPR.TaskTabRAr[TabList.SelectedIndex].TabName=TabName.Text;
-			TPR.TaskTabRAr[TabList.SelectedIndex].DDS=TabDDS.Text;
+			TPR.TaskTabRAr[TabList.SelectedIndex].TabName=Timer2.MainTimer.TC.TabPages[TabList.SelectedIndex].Text=TabName.Text;
+			TPR.TaskTabRAr[TabList.SelectedIndex].DDS = TabDDS.Text;
 			TabsReinitalize();
 		}
 
@@ -86,6 +86,7 @@ namespace Timer2 {
 
 		private void TabsReinitalize () {
 			TabID.Text = TabName.Text=TabDDS.Text=""; TabList.SelectedIndex=-1; TabID.BackColor = Color.White;
+		
 		}
 		#endregion
 		

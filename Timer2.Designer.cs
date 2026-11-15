@@ -287,6 +287,7 @@
 			Controls.Add(EditMTabs);
 			Controls.Add(MS1);
 			Controls.Add(TC);
+			KeyPreview=true;
 			MainMenuStrip=MS1;
 			Name="Timer2";
 			ShowInTaskbar=false;
@@ -294,6 +295,8 @@
 			Text="Timer 2";
 			FormClosing+=Timer2_FormClosing;
 			ResizeEnd+=Timer2_ResizeEnd;
+			KeyDown+=Timer2_KeyDown;
+			KeyUp+=Timer2_KeyUp;
 			MS1.ResumeLayout(false);
 			MS1.PerformLayout();
 			TC.ResumeLayout(false);
@@ -316,7 +319,6 @@
 		private TabPage TCTab3;
 		private TabPage TCTab4;
 		public TabControl TC;
-		private ToolTip ToolTip;
 		private ToolStripMenuItem SMASave;
 		private SaveFileDialog SFD;
 		private OpenFileDialog LFD;
@@ -334,5 +336,6 @@
 		private ToolStripMenuItem reportToolStripMenuItem1;
 		private ToolStripMenuItem quitToolStripMenuItem;
 		public System.Windows.Forms.Timer Timer1;
+		public ToolTip ToolTip;
 	}
 }

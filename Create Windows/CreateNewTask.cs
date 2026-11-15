@@ -35,7 +35,7 @@ namespace Timer2 {
 			Clear(); STask=TargetTask.Clone(); TaskOk.Text="Edit";
 			TaskResetDay1.Checked=(STask.Days&1)==1; TaskResetDay2.Checked=(STask.Days&2)==2; TaskResetDay3.Checked=(STask.Days&4)==4; TaskResetDay4.Checked=(STask.Days&8)==8; TaskResetDay5.Checked=(STask.Days&16)==16; TaskResetDay6.Checked=(STask.Days&32)==32; TaskResetDay7.Checked=(STask.Days&64)==64;
 			TaskResetDP.Value=new DateTime(DateTime.Today.Add(new TimeSpan(STask.ResetTime.Item1, STask.ResetTime.Item2, 0)).Ticks);
-			TaskResetRB1.Checked=(STask.Days>=0);
+			TaskResetRB2.Checked = (STask.Days==0); TaskResetRB1.Checked=(STask.Days>0);
 
 			TaskName.Text=STask.ID; TaskDDS.Text=STask.DDS; TaskName.BackColor=STask.TaskColor;
 			TaskExpireDP.Checked=STask.Expire.HasValue; if (STask.Expire.HasValue) TaskExpireDP.Value=STask.Expire.Value;
@@ -167,7 +167,6 @@ namespace Timer2 {
 		private void TimerWav2_CheckedChanged(object sender, EventArgs e) { if (TimerWav2.Checked) { TimerWavPath.Text="Beep"; } }
 		private void TimerWav3_MouseClick(object sender, MouseEventArgs e) { if (WFD.ShowDialog()==DialogResult.OK) { TimerWavPath.Text=WFD.FileName; } }
 
-
 		private void TimerList_SelectedIndexChanged(object sender, EventArgs e) {
 			if (TimerList.SelectedIndex<0) return;
 			TimerValue.Value=(STask.DefaultTimersValue[TimerList.SelectedIndex]/1000);
@@ -183,7 +182,7 @@ namespace Timer2 {
 			if (TimerName.Text=="") { TimerName.BackColor=Color.Red; return; }
 
 			System.Diagnostics.Debug.WriteLine("Time Val = "+Convert.ToInt64(TimerValue.Value));
-			STask.TimersValue.Add(0);
+			STask.TimersValue.Add((TimerRB4.Checked?Convert.ToInt64(TimerValue.Value)*1000:0));
 			STask.DefaultTimersValue.Add(Convert.ToInt64(TimerValue.Value)*1000);
 			STask.TimersWavPath.Add(TimerWavPath.Text);
 			STask.TimersName.Add(((TimerRB1.Checked ? 0 : 1)+(TimerRB3.Checked ? 0 : 2))+"_"+TimerName.Text);
