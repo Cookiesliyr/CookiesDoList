@@ -6,6 +6,7 @@ To start the program would like this:
 
 <img width="602" height="336" alt="Fresh" src="https://github.com/user-attachments/assets/2664d908-44bf-4b77-b32c-c942e256d6bb" />
 
+
 First you have to make a <strong>program loadout</strong>:
 
 <img width="600" height="333" alt="Create new program 1" src="https://github.com/user-attachments/assets/d7f11d02-5b8b-44bf-8e89-f46a779b3724" />
@@ -13,10 +14,12 @@ First you have to make a <strong>program loadout</strong>:
 
 After clicking on "Create New Program* this page will show up:
 
+
 <img width="323" height="337" alt="Create new program 2" src="https://github.com/user-attachments/assets/067b2896-d956-45e5-b9c9-03db5f4fcbbd" />
 
 
 Fill the <strong>program loadout</strong> data and click ok, the program will look like this:
+
 
 <img width="595" height="333" alt="Edit 1" src="https://github.com/user-attachments/assets/c62f034f-d67f-4df7-b90d-927d922cd756" />
 
@@ -27,14 +30,16 @@ To add new tabs for the program load out click on the pin beside the tab contain
 
 <img width="599" height="334" alt="Edit 2" src="https://github.com/user-attachments/assets/368a96c1-c2ec-48a2-94db-3f487a981e44" />
 
+
 This page will show up:
 
 <img width="393" height="413" alt="Task tabs Editer 1" src="https://github.com/user-attachments/assets/3cfb6aa6-da1a-4952-bfcb-cc5fa7667e22" />
 
+
 The task tab editor will open, enter the info of the tab that including:
-Tab ID: for coding purposes, no space or symbols are allowed
-Tab Name: that what will show on the program
-Tab Description: additional info, can be shown from the ?
+<b>Tab ID</b>: for coding purposes, no space or symbols are allowed
+<b>Tab Name</b>: that what will show on the program
+<b>Tab Description</b>: additional info, can be shown from the ?
 
 After you fill the data don't forgot to click on add to add the new tab.
 
