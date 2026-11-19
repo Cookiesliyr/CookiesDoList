@@ -1,4 +1,4 @@
-$\color{Green}{\textbf{Timer 2}}$ is a task managment software where you can create program load out, add custom tabs and each tab holds custom tasks.<br><br>
+$\color{Green}{\textbf{Timer 2 or Tasko}}$ is a task managment software where you can create program load out, add custom tabs and each tab holds custom tasks.<br><br>
 To download the program click on <a href="https://github.com/Cookiesliyr/CookiesDoList/releases/download/v1.0.0/Tasko.The.Task.Manager.rar">Windows V1.0.0 Beta</a><br><br>
 To start the program would like this:
 
