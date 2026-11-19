@@ -354,7 +354,9 @@ namespace Timer2 {
 
 		private void NewTaskButt_Click(object sender, EventArgs e) {
 			if (CurTProgra==null) return;
-			CreateNewTask.CurTaskBar=TC.SelectedIndex; NewTaskMenu.Clear(true); NewTaskMenu.Show();
+			CreateNewTask.CurTaskBar=TC.SelectedIndex; NewTaskMenu.TaskOk.Text="OK";
+			NewTaskMenu.Clear(true);
+			NewTaskMenu.Show();
 		}
 
 		// later on i need to add 3 functions to add a check, a counter or timer, and let this function use those
@@ -589,5 +591,8 @@ namespace Timer2 {
 
 		private void StopWav() { AlarmPlayer.Stop(); }
 
+		private void helpAboutToolStripMenuItem_Click(object sender, EventArgs e) {
+			About A = new About(); A.ShowDialog();
+		}
 	}
 }

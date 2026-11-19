@@ -40,7 +40,7 @@ namespace Timer2 {
 			TaskName.Text=STask.ID; TaskDDS.Text=STask.DDS; TaskName.BackColor=STask.TaskColor;
 			TaskExpireDP.Checked=STask.Expire.HasValue; if (STask.Expire.HasValue) TaskExpireDP.Value=STask.Expire.Value;
 
-			foreach (string C in STask.CheckData)    { CheckList.Items.Add(C.Substring(1)); }
+			foreach (string C in STask.CheckData)    { CheckList.Items.Add(C.Substring(2)); }
 			foreach (string C in STask.CountersName) { int k = 0; TK.TokenSkip(C, ref k, '_',3); CounterList.Items.Add(TK.Token(C, ref k, '\u0FF0')); }
 			foreach (string C in STask.TimersName)   { TimerList.Items.Add(C.Substring(2)); }
 
@@ -65,11 +65,11 @@ namespace Timer2 {
 			}
 			Timer2.MainTimer.Timer1.Enabled=true;
 			Timer2.MainTimer.EnterEditMode();
-			Hide(); Clear(); Timer2.ReturnToTimer();
+			Hide(); Clear(); Timer2.ReturnToTimer(); TaskOk.Text="OK";
 		}
 
 		private void TaskCancel_Click(object sender, EventArgs e) {
-			Hide(); Clear(); Timer2.ReturnToTimer();
+			Hide(); Clear(); Timer2.ReturnToTimer(); TaskOk.Text="OK";
 		}
 
 		private void TaskColor_Click(object sender, EventArgs e) {

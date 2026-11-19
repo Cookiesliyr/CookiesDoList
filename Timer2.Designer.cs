@@ -41,6 +41,7 @@
 			exitToolStripMenuItem=new ToolStripMenuItem();
 			SMEdit=new ToolStripMenuItem();
 			SMReport=new ToolStripMenuItem();
+			helpAboutToolStripMenuItem=new ToolStripMenuItem();
 			EditMTabs=new Button();
 			TC=new TabControl();
 			TCTab1=new TabPage();
@@ -66,7 +67,7 @@
 			// 
 			// MS1
 			// 
-			MS1.Items.AddRange(new ToolStripItem[] { SMFile, SMEdit, SMReport });
+			MS1.Items.AddRange(new ToolStripItem[] { SMFile, SMEdit, SMReport, helpAboutToolStripMenuItem });
 			MS1.Location=new Point(0, 0);
 			MS1.Name="MS1";
 			MS1.Size=new Size(600, 24);
@@ -146,6 +147,13 @@
 			SMReport.Size=new Size(54, 20);
 			SMReport.Text="Report";
 			SMReport.Click+=SMReport_Click;
+			// 
+			// helpAboutToolStripMenuItem
+			// 
+			helpAboutToolStripMenuItem.Name="helpAboutToolStripMenuItem";
+			helpAboutToolStripMenuItem.Size=new Size(83, 20);
+			helpAboutToolStripMenuItem.Text="Help & About";
+			helpAboutToolStripMenuItem.Click+=helpAboutToolStripMenuItem_Click;
 			// 
 			// EditMTabs
 			// 
@@ -337,5 +345,6 @@
 		private ToolStripMenuItem quitToolStripMenuItem;
 		public System.Windows.Forms.Timer Timer1;
 		public ToolTip ToolTip;
+		private ToolStripMenuItem helpAboutToolStripMenuItem;
 	}
 }

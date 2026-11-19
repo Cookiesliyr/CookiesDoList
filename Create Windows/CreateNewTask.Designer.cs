@@ -1070,7 +1070,6 @@
 		private Button TimerSave;
 		private Button TimerAdd;
 		private ListBox TimerList;
-		private Button TaskOk;
 		private Button TaskCancel;
 		private GroupBox groupBox1;
 		private GroupBox groupBox3;
@@ -1137,5 +1136,6 @@
 		private Label label15;
 		private RadioButton CounterRB2;
 		private RadioButton CounterRB1;
+		public Button TaskOk;
 	}
 }
