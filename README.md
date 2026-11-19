@@ -168,10 +168,7 @@ and you could make the App load a program loadout when you start the App
 <img width="603" height="336" alt="Set Default" src="https://github.com/user-attachments/assets/0833c9dc-2114-43b8-9d2e-47f0e80d3b38" />
 <br><br><br>
 ======================================
-This program is Open source, feel free to make new branches and add your own features. 
+This program is Open source, feel free to make new branches and add your own features. Check the discussion page for future features.
 
-additional features that i might add:-
-1- program options: including start when the operation system start, and add autosave mode.
-2- Generate a report feature.
-3- Add calender task feature? maybe? ... not sure
+To support me check [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/N4N41XVHAV) Thanks in adavance!
 
