@@ -141,7 +141,7 @@ Each Timer have 3 components:<br>
 
 ============================
 <b>Quick Edit Tutorial</b><br>
-Editing those component from the edit page can be dounting, so i create Quick edit mode, to do so hold on "Shift" key and click on any component, you will get a new window that you could edit the component quickly!
+Editing those component from the edit page can be dounting, so i create Quick edit mode, to do so hold on "Shift" keyboard key and Mouse click on any component in the Task GUI, you will get a new window that you could edit the component quickly!
 
 <img width="1045" height="505" alt="Quick Edit Tasssk" src="https://github.com/user-attachments/assets/50749565-468b-4e96-937f-1eeaf74ebe62" />
 
